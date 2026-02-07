@@ -22,3 +22,4 @@ export default defineConfig({
     },
   },
 });
+// refer VITE_API_BASE_URL=https://your-backend-name.onrender.com
