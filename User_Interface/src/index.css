@@ -1,0 +1,38 @@
+body { font-family: system-ui, Arial, sans-serif; margin: 24px; background-color: #000000; color: aliceblue;}
+h1 { margin: 0 0 12px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+button {
+  padding: 8px;
+  font-size: 14px;
+  background: #808080;
+}
+
+input {
+  padding: 8px;
+  font-size: 14px;
+}
+table { border-collapse: collapse; width: 100%; margin-top: 12px;}
+th, td { border: 1px solid #7f7777; padding: 8px; text-align: left; }
+th { background: #000000; color: aliceblue;}
+.muted { color: #a8a8a8;}
+.sep { height: 1px; background: #696969; margin: 12px 0; }
+tfoot td { background: #000000; font-weight: bold; color: aliceblue;}
+::placeholder{color: white}
+input[type="text"]{color:white;background-color: black;}
+
+.btnRed { color: white; background-color: rgb(156, 7, 37); border: none; cursor: pointer; }
+.btnRed:hover { opacity: 0.9; }
+.page { margin: 0; }
+
+/* FORCE visible placeholders on dark inputs (Bootstrap override) */
+input.form-control::placeholder,
+textarea.form-control::placeholder {
+  color: #d0d0d0 !important;   /* visible light gray */
+  opacity: 1 !important;       /* override Bootstrap + Firefox */
+}
+
+/* Also cover focus state (Bootstrap changes it) */
+input.form-control:focus::placeholder {
+  color: #bfbfbf !important;
+  opacity: 1 !important;
+}

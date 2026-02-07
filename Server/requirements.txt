@@ -1,0 +1,6 @@
+Flask
+yfinance
+SQLAlchemy
+python-dotenv
+gunicorn
+psycopg2-binary

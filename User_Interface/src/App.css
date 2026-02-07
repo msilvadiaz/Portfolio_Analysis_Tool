@@ -1,0 +1,101 @@
+/* --- Dashboard layout --- */
+.dashLayout {
+  display: grid;
+  grid-template-columns: 1fr 220px; /* main + right selector */
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .dashLayout {
+    grid-template-columns: 1fr; /* stack on mobile */
+  }
+  .dashRight {
+    order: -1; /* selector moves above */
+  }
+}
+
+.dashMain {
+  min-width: 0;
+}
+
+.dashRight {
+  position: sticky;
+  top: 12px;
+}
+
+/* --- Right selector styling --- */
+.dashSelector {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.dashSelectorTitle {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(240, 248, 255, 0.75);
+  margin-bottom: 10px;
+}
+
+.dashPill {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(240, 248, 255, 0.9);
+  cursor: pointer;
+}
+
+.dashPill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dashPill.active {
+  border-color: rgba(144, 238, 255, 0.65);
+  box-shadow: 0 0 0 2px rgba(144, 238, 255, 0.12);
+}
+
+/* --- Panel + Cards --- */
+.dashPanel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.dashCard {
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.dashCardTitle {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(240, 248, 255, 0.75);
+  margin-bottom: 8px;
+}
+
+.dashCardBody {
+  color: rgba(240, 248, 255, 0.9);
+}
+
+.dashCardBig {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* tones */
+.dashCard.info { box-shadow: inset 0 0 0 1px rgba(144, 238, 255, 0.10); }
+.dashCard.warn { box-shadow: inset 0 0 0 1px rgba(255, 200, 120, 0.12); }
+.dashCard.ok { box-shadow: inset 0 0 0 1px rgba(140, 255, 200, 0.10); }
