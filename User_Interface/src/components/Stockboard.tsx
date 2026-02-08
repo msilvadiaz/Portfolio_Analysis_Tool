@@ -29,7 +29,6 @@ export default function Stockboard() {
   );
 
   async function drawGuest() {
-    // mimic the old HTML guest behavior: quote each ticker; compute totals locally
     const out: StockRow[] = [];
     for (const s of guestStocks) {
       try {
@@ -223,11 +222,11 @@ export default function Stockboard() {
       className="min-vh-100"
       style={{
         background:
-          "linear-gradient(180deg, rgba(87, 0, 0, 0.95), rgba(0, 0, 0, 0.8))",
+          "linear-gradient(180deg, rgba(130, 0, 0, 0.95), rgba(81, 2, 2, 0.5))",
       }}
     >
       <div className="container py-4">
-        <h1 className="mb-3">{title}</h1>
+        <h1 className="mb-3 text-white">{title}</h1>
 
         <AuthBar
           isGuest={!currentUser}
