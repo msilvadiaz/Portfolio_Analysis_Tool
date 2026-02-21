@@ -57,14 +57,14 @@ export default function AddStockForm({ onAdd, onRefresh, disabled }: Props) {
       />
 
       <button
-        className="btn btn-danger"
+        className="btn btn-dark"
         onClick={handleAdd}
         disabled={disabled || !canSubmit}
       >
         Add stock
       </button>
       <button
-        className="btn btn-danger"
+        className="btn btn-dark"
         onClick={() => onRefresh()}
         disabled={disabled}
       >

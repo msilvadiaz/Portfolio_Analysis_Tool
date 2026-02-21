@@ -6,14 +6,23 @@ import Message from "./Message";
 import type { StockRow } from "../types";
 import * as api from "../api";
 
-type GuestStock = { ticker: string; broker: string; shares: number };
+export type GuestStock = { ticker: string; broker: string; shares: number };
 
-export default function Stockboard() {
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
+type Props = {
+  currentUser: string | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<string | null>>;
+  guestStocks: GuestStock[];
+  setGuestStocks: React.Dispatch<React.SetStateAction<GuestStock[]>>;
+};
+
+export default function Stockboard({
+  currentUser,
+  setCurrentUser,
+  guestStocks,
+  setGuestStocks,
+}: Props) {
   const [rows, setRows] = useState<StockRow[]>([]);
   const [portfolioTotal, setPortfolioTotal] = useState<number | null>(null);
-
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{
     text: string | null;
@@ -51,13 +60,18 @@ export default function Stockboard() {
         });
       }
     }
+
     const grand = out.reduce(
       (acc, r) => acc + (typeof r.total_value === "number" ? r.total_value : 0),
       0,
     );
-    const anyTotals = out.some((r) => r.total_value != null);
+
     setRows(out);
-    setPortfolioTotal(anyTotals ? Math.round(grand * 100) / 100 : null);
+    setPortfolioTotal(
+      out.some((r) => r.total_value != null)
+        ? Math.round(grand * 100) / 100
+        : null,
+    );
   }
 
   async function drawUser(username: string) {
@@ -72,36 +86,19 @@ export default function Stockboard() {
     try {
       if (!currentUser) await drawGuest();
       else await drawUser(currentUser);
-    } catch (e) {
-      setMsg({
-        text: e instanceof Error ? e.message : "Refresh failed",
-        variant: "danger",
-      });
+    } catch {
+      setMsg({ text: "Refresh failed", variant: "danger" });
     } finally {
       setBusy(false);
     }
   }
 
   async function handleAdd(ticker: string, shares: number, broker: string) {
-    setMsg({ text: null });
     setBusy(true);
     try {
       if (!currentUser) {
-        // Validate ticker on Yahoo before adding (same as old HTML)
         await api.quote(ticker);
-
-        setGuestStocks((prev) => {
-          const t = ticker.toUpperCase();
-          const idx = prev.findIndex(
-            (x) => x.ticker.toUpperCase() === t && x.broker === broker,
-          );
-          if (idx >= 0) {
-            const copy = [...prev];
-            copy[idx] = { ...copy[idx], shares };
-            return copy;
-          }
-          return [...prev, { ticker: t, broker, shares }];
-        });
+        setGuestStocks((prev) => [...prev, { ticker, broker, shares }]);
       } else {
         const data = await api.addStock({
           user: currentUser,
@@ -112,108 +109,50 @@ export default function Stockboard() {
         setRows(data.stocks || []);
         setPortfolioTotal(data.portfolio_total ?? null);
       }
-    } catch (e) {
-      setMsg({
-        text: e instanceof Error ? e.message : "Add failed",
-        variant: "danger",
-      });
     } finally {
       setBusy(false);
     }
   }
 
   async function handleDelete(ticker: string, broker: string) {
-    setMsg({ text: null });
-    setBusy(true);
-    try {
-      if (!currentUser) {
-        setGuestStocks((prev) =>
-          prev.filter(
-            (s) =>
-              !(
-                s.ticker.toUpperCase() === ticker.toUpperCase() &&
-                s.broker === broker
-              ),
-          ),
-        );
-      } else {
-        const data = await api.deleteStock({
-          user: currentUser,
-          ticker,
-          broker,
-        });
-        setRows(data.stocks || []);
-        setPortfolioTotal(data.portfolio_total ?? null);
-      }
-    } catch (e) {
-      setMsg({
-        text: e instanceof Error ? e.message : "Delete failed",
-        variant: "danger",
-      });
-    } finally {
-      setBusy(false);
+    if (!currentUser) {
+      setGuestStocks((prev) =>
+        prev.filter((s) => !(s.ticker === ticker && s.broker === broker)),
+      );
+    } else {
+      const data = await api.deleteStock({ user: currentUser, ticker, broker });
+      setRows(data.stocks || []);
+      setPortfolioTotal(data.portfolio_total ?? null);
     }
   }
 
   async function makeUsernameFlow() {
-    const name = window.prompt(
-      "Choose a username (backend stores lowercased):",
-    );
-    if (!name?.trim()) return;
+    const name = window.prompt("Choose a username:");
+    if (!name) return;
 
-    setMsg({ text: null });
-    setBusy(true);
-    try {
-      const payload = guestStocks.map((s) => ({
-        ticker: s.ticker,
-        broker: s.broker,
-        shares: s.shares,
-      }));
-      const data = await api.addProfile(name.trim(), payload);
+    const payload = guestStocks.map((s) => ({
+      ticker: s.ticker,
+      broker: s.broker,
+      shares: s.shares,
+    }));
 
-      setCurrentUser(name.trim());
-      setGuestStocks([]);
-      setRows(data.stocks || []);
-      setPortfolioTotal(data.portfolio_total ?? null);
-      setMsg({
-        text: `Profile created. Welcome ${name.trim()}!`,
-        variant: "success",
-      });
-    } catch (e) {
-      setMsg({
-        text: e instanceof Error ? e.message : "Profile creation failed",
-        variant: "danger",
-      });
-    } finally {
-      setBusy(false);
-    }
+    const data = await api.addProfile(name, payload);
+    setCurrentUser(name);
+    setGuestStocks([]);
+    setRows(data.stocks || []);
+    setPortfolioTotal(data.portfolio_total ?? null);
   }
 
   async function haveUsernameFlow() {
     const name = window.prompt("Enter your username:");
-    if (!name?.trim()) return;
+    if (!name) return;
 
-    setMsg({ text: null });
-    setBusy(true);
-    try {
-      await drawUser(name.trim());
-      setCurrentUser(name.trim());
-      setMsg({ text: `Welcome back ${name.trim()}!`, variant: "info" });
-    } catch (e) {
-      setMsg({
-        text: e instanceof Error ? e.message : "User not found",
-        variant: "danger",
-      });
-    } finally {
-      setBusy(false);
-    }
+    await drawUser(name);
+    setCurrentUser(name);
   }
 
-  // keep guest table in sync when guestStocks changes
   useEffect(() => {
-    if (!currentUser) {
-      refresh();
-    }
+    if (!currentUser) refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guestStocks, currentUser]);
 
@@ -222,7 +161,7 @@ export default function Stockboard() {
       className="min-vh-100"
       style={{
         background:
-          "linear-gradient(180deg, rgba(130, 0, 0, 0.95), rgba(81, 2, 2, 0.5))",
+          "linear-gradient(180deg, rgba(130,0,0,.95), rgba(81,2,2,.5))",
       }}
     >
       <div className="container py-4">
@@ -233,8 +172,6 @@ export default function Stockboard() {
           onMakeUsername={makeUsernameFlow}
           onHaveUsername={haveUsernameFlow}
         />
-
-        <hr className="border-secondary" />
 
         <Message
           variant={msg.variant ?? "danger"}

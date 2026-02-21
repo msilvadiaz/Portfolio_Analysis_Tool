@@ -13,13 +13,13 @@ export default function AuthBar({
 
   return (
     <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
-      <button className="btn btn-danger" onClick={onMakeUsername}>
+      <button className="btn btn-dark" onClick={onMakeUsername}>
         Make a username
       </button>
-      <button className="btn btn-danger" onClick={onHaveUsername}>
+      <button className="btn btn-dark" onClick={onHaveUsername}>
         Already have a username
       </button>
-      <span className="text-secondary">
+      <span className="text-light">
         Guest mode: your stocks aren’t saved yet.
       </span>
     </div>
