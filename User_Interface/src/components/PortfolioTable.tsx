@@ -43,7 +43,12 @@ export default function PortfolioTable({
                 <td>{s.total_value ?? "-"}</td>
                 <td>
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="btn btn-sm"
+                    style={{
+                      backgroundColor: "#bfbfbf",
+                      borderColor: "#bfbfbf",
+                      color: "#111",
+                    }}
                     onClick={() => onDelete(s.ticker, s.broker)}
                     disabled={disabled}
                   >
