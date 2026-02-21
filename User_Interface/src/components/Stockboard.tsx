@@ -160,8 +160,7 @@ export default function Stockboard({
     <div
       className="min-vh-100"
       style={{
-        background:
-          "linear-gradient(180deg, rgba(130,0,0,.95), rgba(81,2,2,.5))",
+        background: "#5a0000",
       }}
     >
       <div className="container py-4">
