@@ -71,3 +71,10 @@ export default defineConfig([
   },
 ])
 ```
+
+## Portfolio Performance (1Y)
+
+The Models page includes a Portfolio Performance (1Y) line chart for logged-in users.
+The backend computes each daily point as: `V(t) = Σ(shares_i × adjustedClose_i(t))`,
+where `shares_i` are the user's current holdings from PostgreSQL and `adjustedClose_i(t)`
+comes from Yahoo Finance daily adjusted prices over the last year.
