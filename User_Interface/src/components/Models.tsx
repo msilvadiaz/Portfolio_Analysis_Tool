@@ -2,6 +2,7 @@ import type { GuestStock } from "./Stockboard";
 
 type Props = {
   currentUser: string | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<string | null>>;
   guestStocks: GuestStock[];
 };
 

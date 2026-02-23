@@ -5,7 +5,9 @@ import Models from "./components/Models";
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("stockboard");
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(() =>
+    localStorage.getItem("stockboard_username"),
+  );
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
   const menuWidth = 260;
 
@@ -22,7 +24,11 @@ export default function App() {
             setGuestStocks={setGuestStocks}
           />
         ) : (
-          <Models currentUser={currentUser} guestStocks={guestStocks} />
+          <Models
+            currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
+            guestStocks={guestStocks}
+          />
         )}
       </main>
     </div>

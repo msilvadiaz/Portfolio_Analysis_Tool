@@ -19,9 +19,7 @@ export default function AuthBar({
       <button className="btn btn-dark" onClick={onHaveUsername}>
         Already have a username
       </button>
-      <span className="text-light">
-        Guest mode: your stocks aren’t saved yet.
-      </span>
+      <span className="text-light">Guest mode: your stocks aren’t saved yet.</span>
     </div>
   );
 }
