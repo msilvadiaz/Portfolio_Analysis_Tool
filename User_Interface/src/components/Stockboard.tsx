@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AuthBar from "./AuthBar";
 import AddStockForm from "./AddStockForm";
 import PortfolioTable from "./PortfolioTable";
@@ -28,6 +28,7 @@ export default function Stockboard({
     text: string | null;
     variant?: "danger" | "success" | "info";
   }>({ text: null });
+  const latestLoadId = useRef(0);
 
   const title = useMemo(
     () =>
@@ -81,6 +82,7 @@ export default function Stockboard({
   }
 
   async function refresh() {
+    const loadId = ++latestLoadId.current;
     setMsg({ text: null });
     setBusy(true);
     try {
@@ -89,7 +91,7 @@ export default function Stockboard({
     } catch {
       setMsg({ text: "Refresh failed", variant: "danger" });
     } finally {
-      setBusy(false);
+      if (loadId === latestLoadId.current) setBusy(false);
     }
   }
 
@@ -137,6 +139,7 @@ export default function Stockboard({
     }));
 
     const data = await api.addProfile(name, payload);
+    localStorage.setItem("stockboard_username", name);
     setCurrentUser(name);
     setGuestStocks([]);
     setRows(data.stocks || []);
@@ -148,13 +151,26 @@ export default function Stockboard({
     if (!name) return;
 
     await drawUser(name);
+    localStorage.setItem("stockboard_username", name);
     setCurrentUser(name);
   }
 
+  function handleSignOut() {
+    localStorage.removeItem("stockboard_username");
+    setCurrentUser(null);
+  }
+
   useEffect(() => {
-    if (!currentUser) refresh();
+    void refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guestStocks, currentUser]);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      void refresh();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guestStocks]);
 
   return (
     <div
@@ -170,6 +186,7 @@ export default function Stockboard({
           isGuest={!currentUser}
           onMakeUsername={makeUsernameFlow}
           onHaveUsername={haveUsernameFlow}
+          onSignOut={handleSignOut}
         />
 
         <Message
