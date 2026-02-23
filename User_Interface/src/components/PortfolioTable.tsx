@@ -72,7 +72,11 @@ export default function PortfolioTable({
                     {typeof s.price === "number" ? (
                       <>
                         ${s.price.toFixed(2)}
-                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                        {triangle ? (
+                          <span style={{ marginLeft: 6, color }}>
+                            {triangle}
+                          </span>
+                        ) : null}
                       </>
                     ) : (
                       "-"
@@ -82,7 +86,11 @@ export default function PortfolioTable({
                     {typeof s.total_value === "number" ? (
                       <>
                         ${s.total_value.toFixed(2)}
-                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                        {triangle ? (
+                          <span style={{ marginLeft: 6, color }}>
+                            {triangle}
+                          </span>
+                        ) : null}
                       </>
                     ) : (
                       "-"
@@ -110,9 +118,11 @@ export default function PortfolioTable({
         <tfoot>
           <tr>
             <td colSpan={4} className="text-end fw-bold">
-              Total invested money:
+              Total invested amount:
             </td>
-            <td className="fw-bold">{portfolioTotal ?? "—"}</td>
+            <td className="fw-bold">
+              {portfolioTotal != null ? `$${portfolioTotal}` : "_"}
+            </td>
             <td />
           </tr>
         </tfoot>
