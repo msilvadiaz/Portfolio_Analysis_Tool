@@ -1,7 +1,8 @@
 import { useState } from "react";
 import SideMenu, { type ViewKey } from "./components/Selection";
-import Stockboard, { type GuestStock } from "./components/Stockboard";
+import Stockboard from "./components/Stockboard";
 import Models from "./components/Models";
+import type { GuestStock } from "./types";
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("stockboard");

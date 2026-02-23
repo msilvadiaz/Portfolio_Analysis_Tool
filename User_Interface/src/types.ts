@@ -20,6 +20,11 @@ export type ApiError = {
   ticker?: string;
 };
 
+export type GuestStock = {
+  ticker: string;
+  broker: string;
+  shares: number;
+};
 
 export type PortfolioHistoryPoint = {
   date: string;

@@ -359,6 +359,50 @@ def api_quote(ticker: str):
         return jsonify({"ticker": t, "price": None, "previous_close": None, "error": str(e)}), 502
 
 
+
+
+@stockboard.route("/api/portfolio/history/guest", methods=["POST"])
+def api_portfolio_history_guest():
+    data = request.get_json(force=True) or {}
+    payload = data.get("stocks")
+    period = (data.get("period") or "1y").strip().lower()
+
+    if period != "1y":
+        return jsonify({"error": "only period=1y is currently supported"}), 400
+
+    if not isinstance(payload, list):
+        return jsonify({"error": "stocks must be an array"}), 400
+
+    holdings: dict[str, float] = {}
+    for item in payload:
+        if not isinstance(item, dict):
+            return jsonify({"error": "each stock must be an object"}), 400
+
+        ticker = (item.get("ticker") or "").strip().upper()
+        shares_raw = item.get("shares")
+
+        try:
+            shares = float(shares_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "shares must be a number > 0"}), 400
+
+        if not ticker:
+            return jsonify({"error": "ticker is required"}), 400
+
+        if shares <= 0:
+            return jsonify({"error": "shares must be a number > 0"}), 400
+
+        holdings[ticker] = holdings.get(ticker, 0.0) + shares
+
+    if not holdings:
+        return jsonify([])
+
+    try:
+        series = compute_portfolio_history(holdings, period)
+        return jsonify(series)
+    except Exception as e:
+        return jsonify({"error": f"failed to compute portfolio history: {str(e)}"}), 502
+
 @stockboard.route("/api/portfolio/history", methods=["GET"])
 def api_portfolio_history():
     username_lower = (request.args.get("user") or "").strip().lower()

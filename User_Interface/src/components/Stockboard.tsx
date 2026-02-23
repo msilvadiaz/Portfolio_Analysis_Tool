@@ -3,10 +3,9 @@ import AuthBar from "./AuthBar";
 import AddStockForm from "./AddStockForm";
 import PortfolioTable from "./PortfolioTable";
 import Message from "./Message";
-import type { StockRow } from "../types";
+import type { GuestStock, StockRow } from "../types";
 import * as api from "../api";
 
-export type GuestStock = { ticker: string; broker: string; shares: number };
 
 type Props = {
   currentUser: string | null;
