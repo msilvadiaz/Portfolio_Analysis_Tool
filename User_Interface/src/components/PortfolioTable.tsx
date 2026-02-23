@@ -71,7 +71,7 @@ export default function PortfolioTable({
                   <td style={{ color }}>
                     {typeof s.price === "number" ? (
                       <>
-                        ${s.price.toFixed(4)}
+                        ${s.price.toFixed(2)}
                         {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
                       </>
                     ) : (

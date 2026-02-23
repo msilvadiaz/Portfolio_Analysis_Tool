@@ -191,6 +191,12 @@ def get_cached_portfolio_history(username_lower: str, period: str) -> list[dict[
 def set_cached_portfolio_history(username_lower: str, period: str, payload: list[dict[str, str | float]]) -> None:
     portfolio_history_cache[(username_lower, period)] = (time.time(), payload)
 
+
+def clear_cached_portfolio_history(username_lower: str) -> None:
+    keys_to_remove = [key for key in portfolio_history_cache if key[0] == username_lower]
+    for key in keys_to_remove:
+        portfolio_history_cache.pop(key, None)
+
 #routes
 #@stockboard.route("/")
 #def home():
@@ -253,6 +259,7 @@ def api_add_profile():
             s.add(Stock(user_id=u.id, ticker=t, broker=b, shares=sh))
 
         s.commit()
+        clear_cached_portfolio_history(username_lower)
         rows, total = compute_user_portfolio(s, username_lower)
         return jsonify({"user": u.username, "stocks": rows, "portfolio_total": total}), 201
 
@@ -291,6 +298,7 @@ def api_add_stock():
             s.add(Stock(user_id=u.id, ticker=ticker, broker=broker, shares=shares))
 
         s.commit()
+        clear_cached_portfolio_history(username_lower)
         rows, total = compute_user_portfolio(s, username_lower)
         return jsonify({"user": u.username, "stocks": rows, "portfolio_total": total}), 201
 
@@ -316,6 +324,7 @@ def api_delete_stock():
 
         s.delete(st)
         s.commit()
+        clear_cached_portfolio_history(username_lower)
 
         rows, total = compute_user_portfolio(s, username_lower)
         return jsonify({"message": "deleted", "user": u.username, "stocks": rows, "portfolio_total": total})
