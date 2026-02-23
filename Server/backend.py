@@ -45,22 +45,51 @@ portfolio_history_cache: dict[tuple[str, str], tuple[float, list[dict[str, str |
 
 
 def latest_price(ticker: str) -> float:
+    price, _ = price_snapshot(ticker)
+    return price
+
+
+def price_snapshot(ticker: str) -> tuple[float, float | None]:
     t = yf.Ticker(ticker)
-    price = t.fast_info.get("last_price")
+    fast_info = getattr(t, "fast_info", {}) or {}
+
+    price = fast_info.get("last_price")
+    previous_close = fast_info.get("previous_close")
+
+    if price is None or previous_close is None:
+        hist = t.history(period="5d")
+        closes = hist.get("Close") if hist is not None else None
+        if closes is not None:
+            closes = closes.dropna()
+            if price is None and not closes.empty:
+                price = closes.iloc[-1]
+            if previous_close is None and len(closes) >= 2:
+                previous_close = closes.iloc[-2]
+
     if price is None:
-        price = t.history(period="1d")["Close"].iloc[-1]
-    return float(price)
+        raise ValueError(f"No market price found for ticker {ticker}")
+
+    return float(price), float(previous_close) if previous_close is not None else None
 
 
-def stock_row(s: Stock, price: float | None) -> dict:
+def stock_row(s: Stock, price: float | None, previous_close: float | None) -> dict:
     if price is None:
-        return {"ticker": s.ticker, "broker": s.broker, "shares": s.shares, "price": None, "total_value": None}
+        return {
+            "ticker": s.ticker,
+            "broker": s.broker,
+            "shares": s.shares,
+            "price": None,
+            "previous_close": previous_close,
+            "total_value": None,
+        }
+
     p = float(price)
     return {
         "ticker": s.ticker,
         "broker": s.broker,
         "shares": float(f"{s.shares:.4f}"),
         "price": round(p, 4),
+        "previous_close": round(float(previous_close), 4) if previous_close is not None else None,
         "total_value": round(p * s.shares, 2),
     }
 
@@ -72,12 +101,12 @@ def compute_user_portfolio(session: Session, username_lower: str) -> tuple[list[
     rows, total = [], 0.0
     for s in u.stocks:
         try:
-            p = latest_price(s.ticker)
-            r = stock_row(s, p)
+            p, prev_close = price_snapshot(s.ticker)
+            r = stock_row(s, p, prev_close)
             rows.append(r)
             total += r["total_value"]
         except Exception:
-            rows.append(stock_row(s, None))
+            rows.append(stock_row(s, None, None))
     rows.sort(key=lambda r: r["total_value"] if r["total_value"] is not None else float("inf"))
     return rows, round(total, 2)
 
@@ -298,10 +327,10 @@ def api_list_all_stocks():
         out = []
         for row in all_rows:
             try:
-                p = latest_price(row.ticker)
-                out.append({**stock_row(row, p), "user": row.user.username})
+                p, prev_close = price_snapshot(row.ticker)
+                out.append({**stock_row(row, p, prev_close), "user": row.user.username})
             except Exception:
-                out.append({**stock_row(row, None), "user": row.user.username})
+                out.append({**stock_row(row, None, None), "user": row.user.username})
         out.sort(key=lambda r: r["total_value"] if r["total_value"] is not None else float("inf"))
         return jsonify({"stocks": out})
 
@@ -311,10 +340,14 @@ def api_quote(ticker: str):
     if not t:
         return jsonify({"error": "ticker required"}), 400
     try:
-        p = latest_price(t)
-        return jsonify({"ticker": t, "price": round(float(p), 4)})
+        p, prev_close = price_snapshot(t)
+        return jsonify({
+            "ticker": t,
+            "price": round(float(p), 4),
+            "previous_close": round(float(prev_close), 4) if prev_close is not None else None,
+        })
     except Exception as e:
-        return jsonify({"ticker": t, "price": None, "error": str(e)}), 502
+        return jsonify({"ticker": t, "price": None, "previous_close": None, "error": str(e)}), 502
 
 
 @stockboard.route("/api/portfolio/history", methods=["GET"])

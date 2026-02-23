@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { StockRow } from "../types";
 
 type Props = {
@@ -8,39 +7,36 @@ type Props = {
   disabled?: boolean;
 };
 
+type Direction = "up" | "down" | "flat";
+
+function getDirection(row: StockRow): Direction {
+  if (typeof row.price !== "number" || typeof row.previous_close !== "number") {
+    return "flat";
+  }
+
+  if (row.price > row.previous_close) return "up";
+  if (row.price < row.previous_close) return "down";
+  return "flat";
+}
+
+function directionColor(direction: Direction): string | undefined {
+  if (direction === "up") return "#2de26d";
+  if (direction === "down") return "#ff6b7d";
+  return undefined;
+}
+
+function directionTriangle(direction: Direction): string {
+  if (direction === "up") return "▲";
+  if (direction === "down") return "▼";
+  return "";
+}
+
 export default function PortfolioTable({
   rows,
   portfolioTotal,
   onDelete,
   disabled,
 }: Props) {
-  const [previousPrices, setPreviousPrices] = useState<Record<string, number>>(
-    {},
-  );
-
-  useEffect(() => {
-    const latestPrices: Record<string, number> = {};
-    for (const row of rows) {
-      if (typeof row.price === "number") {
-        latestPrices[`${row.ticker}__${row.broker}`] = row.price;
-      }
-    }
-    setPreviousPrices(latestPrices);
-  }, [rows]);
-
-  function getPriceDirection(row: StockRow): "up" | "down" | "flat" {
-    if (typeof row.price !== "number") return "flat";
-    const previous = previousPrices[`${row.ticker}__${row.broker}`];
-    if (previous == null || row.price === previous) return "flat";
-    return row.price > previous ? "up" : "down";
-  }
-
-  function valueColor(direction: "up" | "down" | "flat"): string | undefined {
-    if (direction === "up") return "#2de26d";
-    if (direction === "down") return "#ff6b7d";
-    return undefined;
-  }
-
   return (
     <div className="table-responsive">
       <table className="table table-dark table-bordered align-middle">
@@ -63,10 +59,9 @@ export default function PortfolioTable({
             </tr>
           ) : (
             rows.map((s) => {
-              const direction = getPriceDirection(s);
-              const color = valueColor(direction);
-              const directionSymbol =
-                direction === "up" ? "▲ " : direction === "down" ? "▼ " : "";
+              const direction = getDirection(s);
+              const color = directionColor(direction);
+              const triangle = directionTriangle(direction);
 
               return (
                 <tr key={`${s.ticker}__${s.broker}`}>
@@ -74,14 +69,24 @@ export default function PortfolioTable({
                   <td>{s.broker}</td>
                   <td>{s.shares}</td>
                   <td style={{ color }}>
-                    {typeof s.price === "number"
-                      ? `${directionSymbol}$${s.price.toFixed(4)}`
-                      : "-"}
+                    {typeof s.price === "number" ? (
+                      <>
+                        ${s.price.toFixed(4)}
+                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                      </>
+                    ) : (
+                      "-"
+                    )}
                   </td>
                   <td style={{ color }}>
-                    {typeof s.total_value === "number"
-                      ? `${directionSymbol}$${s.total_value.toFixed(2)}`
-                      : "-"}
+                    {typeof s.total_value === "number" ? (
+                      <>
+                        ${s.total_value.toFixed(2)}
+                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                      </>
+                    ) : (
+                      "-"
+                    )}
                   </td>
                   <td>
                     <button

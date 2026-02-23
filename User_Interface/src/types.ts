@@ -3,6 +3,7 @@ export type StockRow = {
   broker: string;
   shares: number;
   price: number | null;
+  previous_close: number | null;
   total_value: number | null;
 };
 
