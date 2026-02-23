@@ -1,4 +1,4 @@
-import type { ApiError, UserPortfolioResponse } from "./types";
+import type { ApiError, PortfolioHistoryPoint, UserPortfolioResponse } from "./types";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, "") ?? "";
 
@@ -78,5 +78,13 @@ export async function deleteStock(payload: {
   });
   const data = await readJson<UserPortfolioResponse & ApiError>(res);
   if (!res.ok) throw new Error(data.error || data.message || "Delete failed");
+  return data;
+}
+
+export async function getPortfolioHistory(user: string, period = "1y"): Promise<PortfolioHistoryPoint[]> {
+  const res = await fetch(apiUrl(`/api/portfolio/history?user=${encodeURIComponent(user)}&period=${encodeURIComponent(period)}`));
+  const data = await readJson<Array<PortfolioHistoryPoint> & ApiError>(res);
+  if (!res.ok) throw new Error(data.error || "Failed to load portfolio history");
+  if (!Array.isArray(data)) return [];
   return data;
 }

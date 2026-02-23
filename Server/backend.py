@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-import yfinance as yf, os
+import yfinance as yf, os, time
 from sqlalchemy import create_engine, Integer, String, ForeignKey, UniqueConstraint, Float
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from dotenv import load_dotenv
@@ -37,6 +37,10 @@ class Stock(Base):
     )
 
 Base.metadata.create_all(engine)
+PORTFOLIO_HISTORY_TTL_SECONDS = 600
+portfolio_history_cache: dict[tuple[str, str], tuple[float, list[dict]]] = {}
+
+
 def latest_price(ticker: str) -> float:
     t = yf.Ticker(ticker)
     price = t.fast_info.get("last_price")
@@ -73,6 +77,72 @@ def compute_user_portfolio(session: Session, username_lower: str) -> tuple[list[
             rows.append(stock_row(s, None))
     rows.sort(key=lambda r: r["total_value"] if r["total_value"] is not None else float("inf"))
     return rows, round(total, 2)
+
+
+def get_user_holdings(session: Session, username_lower: str) -> dict[str, float]:
+    u = session.query(User).filter_by(username=username_lower).first()
+    if not u:
+        return {}
+
+    holdings: dict[str, float] = {}
+    for stock in u.stocks:
+        ticker = stock.ticker.strip().upper()
+        holdings[ticker] = holdings.get(ticker, 0.0) + float(stock.shares)
+    return holdings
+
+
+def compute_portfolio_history(holdings: dict[str, float], period: str = "1y") -> list[dict]:
+    if not holdings:
+        return []
+
+    tickers = sorted(holdings.keys())
+    history = yf.download(
+        tickers=tickers,
+        period=period,
+        interval="1d",
+        auto_adjust=True,
+        progress=False,
+        group_by="column",
+    )
+
+    if history is None or history.empty:
+        return []
+
+    closes = history["Close"] if "Close" in history else history
+    if getattr(closes, "ndim", 1) == 1:
+        closes = closes.to_frame(name=tickers[0])
+
+    closes = closes.sort_index().ffill()
+    closes = closes[[ticker for ticker in tickers if ticker in closes.columns]]
+    if closes.empty:
+        return []
+
+    shares = [holdings[ticker] for ticker in closes.columns]
+    portfolio_values = closes.mul(shares, axis=1).sum(axis=1)
+
+    # Uses current shares applied to each day's adjusted close for the 1Y period.
+    return [
+        {"date": idx.strftime("%Y-%m-%d"), "value": round(float(value), 2)}
+        for idx, value in portfolio_values.items()
+    ]
+
+
+def get_cached_portfolio_history(username_lower: str, period: str) -> list[dict] | None:
+    cache_key = (username_lower, period)
+    cached = portfolio_history_cache.get(cache_key)
+    if not cached:
+        return None
+
+    expires_at, value = cached
+    if expires_at <= time.time():
+        portfolio_history_cache.pop(cache_key, None)
+        return None
+    return value
+
+
+def set_cached_portfolio_history(username_lower: str, period: str, value: list[dict]) -> None:
+    cache_key = (username_lower, period)
+    portfolio_history_cache[cache_key] = (time.time() + PORTFOLIO_HISTORY_TTL_SECONDS, value)
 
 #routes
 #@stockboard.route("/")
@@ -227,6 +297,32 @@ def api_quote(ticker: str):
         return jsonify({"ticker": t, "price": round(float(p), 4)})
     except Exception as e:
         return jsonify({"ticker": t, "price": None, "error": str(e)}), 502
+
+
+@stockboard.route("/api/portfolio/history", methods=["GET"])
+def api_portfolio_history():
+    username_lower = (request.args.get("user") or "").strip().lower()
+    period = (request.args.get("period") or "1y").strip().lower() or "1y"
+
+    if not username_lower:
+        return jsonify({"error": "user is required"}), 400
+
+    cached = get_cached_portfolio_history(username_lower, period)
+    if cached is not None:
+        return jsonify(cached)
+
+    with Session(engine) as s:
+        holdings = get_user_holdings(s, username_lower)
+        if not holdings:
+            set_cached_portfolio_history(username_lower, period, [])
+            return jsonify([])
+
+    try:
+        portfolio_series = compute_portfolio_history(holdings, period)
+        set_cached_portfolio_history(username_lower, period, portfolio_series)
+        return jsonify(portfolio_series)
+    except Exception as e:
+        return jsonify({"error": f"could not load portfolio history: {e}"}), 502
     
 CORS(stockboard, resources={r"/api/*": {"origins": "*"}})
 

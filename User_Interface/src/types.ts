@@ -18,3 +18,8 @@ export type ApiError = {
   tickers?: string[];
   ticker?: string;
 };
+
+export type PortfolioHistoryPoint = {
+  date: string;
+  value: number;
+};
