@@ -84,7 +84,7 @@ export default function SideMenu({
             cursor: "pointer",
           }}
         >
-          <span aria-hidden="true">📈</span>
+          <span aria-hidden="true">💸</span>
           <span style={{ fontWeight: 600 }}>StockBoard</span>
         </button>
 
@@ -109,7 +109,7 @@ export default function SideMenu({
             cursor: "pointer",
           }}
         >
-          <span aria-hidden="true">🧠</span>
+          <span aria-hidden="true">📈</span>
           <span style={{ fontWeight: 600 }}>Models</span>
         </button>
       </nav>
