@@ -24,12 +24,26 @@ export async function getUser(username: string): Promise<UserPortfolioResponse> 
   return data;
 }
 
-export async function quote(ticker: string): Promise<number> {
+export type QuoteResponse = {
+  ticker: string;
+  price: number;
+  previous_close: number | null;
+};
+
+export async function quote(ticker: string): Promise<QuoteResponse> {
   const t = ticker.trim().toUpperCase();
   const res = await fetch(apiUrl(`/api/quote/${encodeURIComponent(t)}`));
-  const data = await readJson<{ ticker: string; price: number | null } & ApiError>(res);
+  const data = await readJson<{
+    ticker: string;
+    price: number | null;
+    previous_close: number | null;
+  } & ApiError>(res);
   if (!res.ok || typeof data.price !== "number") throw new Error(data.error || "Quote failed");
-  return data.price;
+  return {
+    ticker: data.ticker,
+    price: data.price,
+    previous_close: typeof data.previous_close === "number" ? data.previous_close : null,
+  };
 }
 
 export async function addProfile(

@@ -7,6 +7,30 @@ type Props = {
   disabled?: boolean;
 };
 
+type Direction = "up" | "down" | "flat";
+
+function getDirection(row: StockRow): Direction {
+  if (typeof row.price !== "number" || typeof row.previous_close !== "number") {
+    return "flat";
+  }
+
+  if (row.price > row.previous_close) return "up";
+  if (row.price < row.previous_close) return "down";
+  return "flat";
+}
+
+function directionColor(direction: Direction): string | undefined {
+  if (direction === "up") return "#2de26d";
+  if (direction === "down") return "#ff6b7d";
+  return undefined;
+}
+
+function directionTriangle(direction: Direction): string {
+  if (direction === "up") return "▲";
+  if (direction === "down") return "▼";
+  return "";
+}
+
 export default function PortfolioTable({
   rows,
   portfolioTotal,
@@ -34,29 +58,53 @@ export default function PortfolioTable({
               </td>
             </tr>
           ) : (
-            rows.map((s) => (
-              <tr key={`${s.ticker}__${s.broker}`}>
-                <td>{s.ticker}</td>
-                <td>{s.broker}</td>
-                <td>{s.shares}</td>
-                <td>{s.price ?? "-"}</td>
-                <td>{s.total_value ?? "-"}</td>
-                <td>
-                  <button
-                    className="btn btn-sm"
-                    style={{
-                      backgroundColor: "#bfbfbf",
-                      borderColor: "#bfbfbf",
-                      color: "#111",
-                    }}
-                    onClick={() => onDelete(s.ticker, s.broker)}
-                    disabled={disabled}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
+            rows.map((s) => {
+              const direction = getDirection(s);
+              const color = directionColor(direction);
+              const triangle = directionTriangle(direction);
+
+              return (
+                <tr key={`${s.ticker}__${s.broker}`}>
+                  <td>{s.ticker}</td>
+                  <td>{s.broker}</td>
+                  <td>{s.shares}</td>
+                  <td style={{ color }}>
+                    {typeof s.price === "number" ? (
+                      <>
+                        ${s.price.toFixed(2)}
+                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td style={{ color }}>
+                    {typeof s.total_value === "number" ? (
+                      <>
+                        ${s.total_value.toFixed(2)}
+                        {triangle ? <span style={{ marginLeft: 6, color }}>{triangle}</span> : null}
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-sm"
+                      style={{
+                        backgroundColor: "#bfbfbf",
+                        borderColor: "#bfbfbf",
+                        color: "#111",
+                      }}
+                      onClick={() => onDelete(s.ticker, s.broker)}
+                      disabled={disabled}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
         <tfoot>

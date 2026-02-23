@@ -42,13 +42,14 @@ export default function Stockboard({
     const out: StockRow[] = [];
     for (const s of guestStocks) {
       try {
-        const p = await api.quote(s.ticker);
-        const total = Math.round(p * s.shares * 100) / 100;
+        const quote = await api.quote(s.ticker);
+        const total = Math.round(quote.price * s.shares * 100) / 100;
         out.push({
           ticker: s.ticker.toUpperCase(),
           broker: s.broker,
           shares: s.shares,
-          price: p,
+          price: quote.price,
+          previous_close: quote.previous_close,
           total_value: total,
         });
       } catch {
@@ -57,6 +58,7 @@ export default function Stockboard({
           broker: s.broker,
           shares: s.shares,
           price: null,
+          previous_close: null,
           total_value: null,
         });
       }
