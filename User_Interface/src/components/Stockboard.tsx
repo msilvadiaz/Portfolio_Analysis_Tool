@@ -33,7 +33,7 @@ export default function Stockboard({
   const title = useMemo(
     () =>
       currentUser
-        ? `StockBoard — Welcome ${currentUser}`
+        ? `StockBoard - Welcome back ${currentUser}!`
         : "StockBoard (Guest)",
     [currentUser],
   );

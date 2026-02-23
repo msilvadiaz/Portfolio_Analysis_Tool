@@ -99,7 +99,7 @@ export default function SideMenu({
             padding: "10px 12px",
             borderRadius: 12,
             border: `1px solid ${
-              isModels ? "rgba(250, 144, 139, 0.55)" : "rgba(255,255,255,0.10)"
+              isModels ? "rgba(139, 217, 250, 0.55)" : "rgba(255,255,255,0.10)"
             }`,
             background: isModels
               ? "rgba(167,139,250,0.12)"
