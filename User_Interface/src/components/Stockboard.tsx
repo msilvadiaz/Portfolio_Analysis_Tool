@@ -186,7 +186,6 @@ export default function Stockboard({
           isGuest={!currentUser}
           onMakeUsername={makeUsernameFlow}
           onHaveUsername={haveUsernameFlow}
-          onSignOut={handleSignOut}
         />
 
         <Message
@@ -195,7 +194,12 @@ export default function Stockboard({
           onClose={() => setMsg({ text: null })}
         />
 
-        <AddStockForm onAdd={handleAdd} onRefresh={refresh} disabled={busy} />
+        <AddStockForm
+          onAdd={handleAdd}
+          onRefresh={refresh}
+          onSignOut={currentUser ? handleSignOut : undefined}
+          disabled={busy}
+        />
 
         <PortfolioTable
           rows={rows}

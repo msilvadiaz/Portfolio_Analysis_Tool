@@ -7,10 +7,16 @@ type Props = {
     broker: string,
   ) => Promise<void> | void;
   onRefresh: () => Promise<void> | void;
+  onSignOut?: () => void;
   disabled?: boolean;
 };
 
-export default function AddStockForm({ onAdd, onRefresh, disabled }: Props) {
+export default function AddStockForm({
+  onAdd,
+  onRefresh,
+  onSignOut,
+  disabled,
+}: Props) {
   const [ticker, setTicker] = useState("");
   const [shares, setShares] = useState<string>("");
   const [broker, setBroker] = useState("");
@@ -70,6 +76,11 @@ export default function AddStockForm({ onAdd, onRefresh, disabled }: Props) {
       >
         Refresh
       </button>
+      {onSignOut ? (
+        <button className="btn btn-dark" onClick={onSignOut} disabled={disabled}>
+          Sign out
+        </button>
+      ) : null}
     </div>
   );
 }
