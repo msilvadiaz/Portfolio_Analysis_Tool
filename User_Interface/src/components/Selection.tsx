@@ -74,12 +74,12 @@ export default function SideMenu({
             padding: "10px 12px",
             borderRadius: 12,
             border: `1px solid ${
-              isStock ? "rgba(125,211,252,0.55)" : "rgba(255,255,255,0.10)"
+              isStock ? "rgba(125, 252, 186, 0.55)" : "rgba(255,255,255,0.10)"
             }`,
             background: isStock
               ? "rgba(125,211,252,0.12)"
               : "rgba(255,255,255,0.06)",
-            color: "rgba(240,248,255,0.95)",
+            color: "rgba(240, 255, 247, 0.95)",
             textAlign: "left",
             cursor: "pointer",
           }}
@@ -99,7 +99,7 @@ export default function SideMenu({
             padding: "10px 12px",
             borderRadius: 12,
             border: `1px solid ${
-              isModels ? "rgba(250, 144, 139, 0.55)" : "rgba(255,255,255,0.10)"
+              isModels ? "rgba(139, 194, 250, 0.55)" : "rgba(255,255,255,0.10)"
             }`,
             background: isModels
               ? "rgba(167,139,250,0.12)"
