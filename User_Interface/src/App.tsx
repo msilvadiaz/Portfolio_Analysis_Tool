@@ -26,7 +26,6 @@ export default function App() {
         ) : (
           <Models
             currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
             guestStocks={guestStocks}
           />
         )}

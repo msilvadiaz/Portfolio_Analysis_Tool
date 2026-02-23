@@ -71,3 +71,12 @@ export default defineConfig([
   },
 ])
 ```
+
+## Portfolio Performance (1Y)
+
+The Models tab now renders a **Portfolio Performance (1Y)** chart for logged-in users.
+The backend computes this as:
+
+`V(t) = Σ_i shares_i * adjustedClose_i(t)`
+
+using the user's **current** holdings from PostgreSQL and Yahoo Finance daily adjusted close prices (`period=1y`, `interval=1d`, `auto_adjust=True`). Duplicate tickers across brokers are aggregated by summing shares before valuation.

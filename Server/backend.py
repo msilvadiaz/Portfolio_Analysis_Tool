@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, Integer, String, ForeignKey, UniqueConstra
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from dotenv import load_dotenv
 from flask_cors import CORS
+import pandas as pd
+import time
 
 load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
@@ -37,6 +39,11 @@ class Stock(Base):
     )
 
 Base.metadata.create_all(engine)
+
+HISTORY_CACHE_TTL_SECONDS = 600
+portfolio_history_cache: dict[tuple[str, str], tuple[float, list[dict[str, str | float]]]] = {}
+
+
 def latest_price(ticker: str) -> float:
     t = yf.Ticker(ticker)
     price = t.fast_info.get("last_price")
@@ -73,6 +80,87 @@ def compute_user_portfolio(session: Session, username_lower: str) -> tuple[list[
             rows.append(stock_row(s, None))
     rows.sort(key=lambda r: r["total_value"] if r["total_value"] is not None else float("inf"))
     return rows, round(total, 2)
+
+
+def get_user_holdings(session: Session, username_lower: str) -> dict[str, float]:
+    u = session.query(User).filter_by(username=username_lower).first()
+    if not u:
+        return {}
+
+    holdings: dict[str, float] = {}
+    for s in u.stocks:
+        ticker = (s.ticker or "").strip().upper()
+        if not ticker or s.shares <= 0:
+            continue
+        holdings[ticker] = holdings.get(ticker, 0.0) + float(s.shares)
+    return holdings
+
+
+def compute_portfolio_history(holdings: dict[str, float], period: str = "1y") -> list[dict[str, str | float]]:
+    if not holdings:
+        return []
+
+    tickers = sorted(holdings.keys())
+    hist = yf.download(
+        tickers=tickers,
+        period=period,
+        interval="1d",
+        auto_adjust=True,
+        progress=False,
+    )
+    if hist is None or hist.empty:
+        return []
+
+    if isinstance(hist.columns, pd.MultiIndex):
+        if "Close" in hist.columns.get_level_values(0):
+            close_df = hist["Close"].copy()
+        else:
+            close_df = pd.DataFrame(index=hist.index)
+    else:
+        close_df = hist[["Close"]].copy()
+        close_df.columns = tickers[:1]
+
+    if close_df.empty:
+        return []
+
+    close_df = close_df.ffill().dropna(how="all")
+    if close_df.empty:
+        return []
+
+    missing_cols = [t for t in tickers if t not in close_df.columns]
+    for t in missing_cols:
+        close_df[t] = pd.NA
+
+    close_df = close_df[tickers].ffill().dropna(how="all")
+    if close_df.empty:
+        return []
+
+    shares_series = pd.Series(holdings, index=tickers, dtype="float64")
+    portfolio_series = close_df.mul(shares_series, axis=1).sum(axis=1, min_count=1).dropna()
+
+    out: list[dict[str, str | float]] = []
+    for idx, value in portfolio_series.items():
+        out.append({
+            "date": idx.strftime("%Y-%m-%d"),
+            "value": round(float(value), 2),
+        })
+    return out
+
+
+def get_cached_portfolio_history(username_lower: str, period: str) -> list[dict[str, str | float]] | None:
+    key = (username_lower, period)
+    item = portfolio_history_cache.get(key)
+    if not item:
+        return None
+    created_at, payload = item
+    if time.time() - created_at > HISTORY_CACHE_TTL_SECONDS:
+        portfolio_history_cache.pop(key, None)
+        return None
+    return payload
+
+
+def set_cached_portfolio_history(username_lower: str, period: str, payload: list[dict[str, str | float]]) -> None:
+    portfolio_history_cache[(username_lower, period)] = (time.time(), payload)
 
 #routes
 #@stockboard.route("/")
@@ -227,6 +315,35 @@ def api_quote(ticker: str):
         return jsonify({"ticker": t, "price": round(float(p), 4)})
     except Exception as e:
         return jsonify({"ticker": t, "price": None, "error": str(e)}), 502
+
+
+@stockboard.route("/api/portfolio/history", methods=["GET"])
+def api_portfolio_history():
+    username_lower = (request.args.get("user") or "").strip().lower()
+    period = (request.args.get("period") or "1y").strip().lower()
+
+    if not username_lower:
+        return jsonify({"error": "user is required"}), 400
+
+    if period != "1y":
+        return jsonify({"error": "only period=1y is currently supported"}), 400
+
+    cached = get_cached_portfolio_history(username_lower, period)
+    if cached is not None:
+        return jsonify(cached)
+
+    try:
+        with Session(engine) as s:
+            holdings = get_user_holdings(s, username_lower)
+        if not holdings:
+            set_cached_portfolio_history(username_lower, period, [])
+            return jsonify([])
+
+        series = compute_portfolio_history(holdings, period)
+        set_cached_portfolio_history(username_lower, period, series)
+        return jsonify(series)
+    except Exception as e:
+        return jsonify({"error": f"failed to compute portfolio history: {str(e)}"}), 502
     
 CORS(stockboard, resources={r"/api/*": {"origins": "*"}})
 
