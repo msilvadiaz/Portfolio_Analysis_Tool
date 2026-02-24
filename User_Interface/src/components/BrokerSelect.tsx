@@ -5,7 +5,8 @@
  */
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 
-import { BROKER_ICONS, GENERIC_BROKER_ICON } from "../data/brokerIcons";
+import BrokerIcon from "./BrokerIcon";
+import { BROKER_ICONS } from "../data/brokerIcons";
 import { OTHER_BROKER, TOP_BROKERS } from "../data/brokers";
 
 type Props = {
@@ -163,7 +164,7 @@ export default function BrokerSelect({ value, onChange, disabled, placeholder = 
         />
         <div className="brokerSelectRightAdornment" aria-hidden="true">
           {selectedKnownBroker ? (
-            <img className="brokerIcon brokerIconPreview" src={BROKER_ICONS[selectedKnownBroker.name] ?? GENERIC_BROKER_ICON} alt="" />
+            <BrokerIcon className="brokerIcon brokerIconPreview" src={BROKER_ICONS[selectedKnownBroker.name]} />
           ) : null}
           <span className={`brokerChevron ${open ? "open" : ""}`}>⌄</span>
         </div>
@@ -234,7 +235,6 @@ type OptionRowProps = {
 };
 
 const OptionRow = forwardRef<HTMLButtonElement, OptionRowProps>(({ optionId, active, selected, label, onSelect }, ref) => {
-  const icon = BROKER_ICONS[label] ?? GENERIC_BROKER_ICON;
   return (
     <button
       ref={ref}
@@ -246,7 +246,7 @@ const OptionRow = forwardRef<HTMLButtonElement, OptionRowProps>(({ optionId, act
       onMouseDown={(e) => e.preventDefault()}
       onClick={onSelect}
     >
-      <img className="brokerIcon" src={icon} alt="" />
+      <BrokerIcon className="brokerIcon" src={BROKER_ICONS[label]} />
       <span>{label}</span>
     </button>
   );

@@ -1,4 +1,5 @@
-import { BROKER_ICONS, GENERIC_BROKER_ICON } from "../data/brokerIcons";
+import BrokerIcon from "./BrokerIcon";
+import { BROKER_ICONS } from "../data/brokerIcons";
 import type { StockRow } from "../types";
 
 type Props = {
@@ -69,10 +70,9 @@ export default function PortfolioTable({
                   <td>{s.ticker}</td>
                   <td>
                     <div className="brokerCell">
-                      <img
+                      <BrokerIcon
                         className="brokerIcon brokerIconTable"
-                        src={BROKER_ICONS[s.broker] ?? GENERIC_BROKER_ICON}
-                        alt=""
+                        src={BROKER_ICONS[s.broker]}
                       />
                       <span>{s.broker}</span>
                     </div>
