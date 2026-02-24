@@ -55,7 +55,7 @@ export default function AddStockForm({
         onChange={(e) => setShares(e.target.value)}
         disabled={disabled}
       />
-      <BrokerSelect value={broker} onChange={setBroker} disabled={disabled} />
+      <BrokerSelect value={broker} onChange={setBroker} disabled={disabled} placeholder="broker" />
 
       <button
         className="btn btn-dark"

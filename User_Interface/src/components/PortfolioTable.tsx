@@ -1,3 +1,4 @@
+import { BROKER_ICONS, GENERIC_BROKER_ICON } from "../data/brokerIcons";
 import type { StockRow } from "../types";
 
 type Props = {
@@ -66,7 +67,16 @@ export default function PortfolioTable({
               return (
                 <tr key={`${s.ticker}__${s.broker}`}>
                   <td>{s.ticker}</td>
-                  <td>{s.broker}</td>
+                  <td>
+                    <div className="brokerCell">
+                      <img
+                        className="brokerIcon brokerIconTable"
+                        src={BROKER_ICONS[s.broker] ?? GENERIC_BROKER_ICON}
+                        alt=""
+                      />
+                      <span>{s.broker}</span>
+                    </div>
+                  </td>
                   <td>{s.shares}</td>
                   <td style={{ color }}>
                     {typeof s.price === "number" ? (
