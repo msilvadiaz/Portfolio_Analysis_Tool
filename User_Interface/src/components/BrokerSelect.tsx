@@ -11,7 +11,7 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  const [isOtherMode, setIsOtherMode] = useState(false);
+  const [isManualMode, setIsManualMode] = useState(false);
 
   const filteredBrokers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -22,11 +22,10 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
   }, [query]);
 
   useEffect(() => {
-    const isKnown = TOP_BROKERS.some(
-      (broker) => broker.name.toLowerCase() === value.trim().toLowerCase(),
-    );
-    setIsOtherMode(!isKnown && value.trim().length > 0);
     setQuery(value);
+    if (!value.trim()) {
+      setIsManualMode(false);
+    }
   }, [value]);
 
   useEffect(() => {
@@ -40,17 +39,26 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  const selectBroker = (selectedBroker: string, other = false) => {
-    setIsOtherMode(other);
+  const selectBroker = (selectedBroker: string) => {
+    setIsManualMode(false);
     setQuery(selectedBroker);
     onChange(selectedBroker);
+    setIsOpen(false);
+  };
+
+  const activateManualMode = () => {
+    setIsManualMode(true);
+    setQuery("");
+    onChange("");
     setIsOpen(false);
   };
 
   const handleInputChange = (next: string) => {
     setQuery(next);
     onChange(next);
-    setIsOpen(true);
+    if (!isManualMode) {
+      setIsOpen(true);
+    }
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -59,13 +67,9 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
       return;
     }
 
-    if (event.key === "Enter" && !isOtherMode && isOpen) {
+    if (event.key === "Enter" && !isManualMode && isOpen && filteredBrokers.length > 0) {
       event.preventDefault();
-      if (filteredBrokers.length > 0) {
-        selectBroker(filteredBrokers[0].name);
-      } else {
-        selectBroker(OTHER_BROKER.name, true);
-      }
+      selectBroker(filteredBrokers[0].name);
     }
   };
 
@@ -73,15 +77,15 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
     <div className="broker-select-wrapper" style={{ maxWidth: 240 }} ref={wrapperRef}>
       <input
         className="form-control bg-gray text-black"
-        placeholder={isOtherMode ? "Enter broker name" : "broker"}
+        placeholder={isManualMode ? "Enter broker name" : "broker"}
         value={query}
         onChange={(e) => handleInputChange(e.target.value)}
-        onFocus={() => !isOtherMode && setIsOpen(true)}
+        onFocus={() => !isManualMode && setIsOpen(true)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
       />
 
-      {!isOtherMode && isOpen ? (
+      {!isManualMode && isOpen ? (
         <div className="broker-dropdown">
           {filteredBrokers.map((broker) => (
             <button
@@ -90,16 +94,14 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
               className="broker-option"
               onClick={() => selectBroker(broker.name)}
             >
-              <span className="broker-icon-dot" aria-hidden="true" />
               {broker.name}
             </button>
           ))}
           <button
             type="button"
             className="broker-option broker-option-other"
-            onClick={() => selectBroker("", true)}
+            onClick={activateManualMode}
           >
-            <span className="broker-icon-dot" aria-hidden="true" />
             {OTHER_BROKER.name}
           </button>
         </div>

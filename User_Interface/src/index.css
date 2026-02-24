@@ -43,43 +43,32 @@ input.form-control:focus::placeholder {
 
 .broker-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: 100%;
   left: 0;
   right: 0;
   z-index: 20;
-  max-height: 240px;
+  max-height: 220px;
   overflow-y: auto;
-  background: #121212;
-  border: 1px solid #2f2f2f;
-  border-radius: 6px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  background: #1f1f1f;
+  border: 1px solid #4a4a4a;
 }
 
 .broker-option {
   width: 100%;
   border: none;
+  border-bottom: 1px solid #3f3f3f;
   background: transparent;
-  color: #f8f9fa;
+  color: #f5f5f5;
   padding: 8px 10px;
   text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .broker-option:hover,
 .broker-option:focus {
-  background: #1f1f1f;
+  background: #320909;
 }
 
 .broker-option-other {
-  border-top: 1px solid #2f2f2f;
-}
-
-.broker-icon-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #8d8d8d;
-  flex-shrink: 0;
+  border-bottom: none;
+  font-weight: 600;
 }
