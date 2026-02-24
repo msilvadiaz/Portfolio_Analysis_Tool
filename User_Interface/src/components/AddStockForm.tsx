@@ -55,7 +55,12 @@ export default function AddStockForm({
         onChange={(e) => setShares(e.target.value)}
         disabled={disabled}
       />
-      <BrokerSelect value={broker} onChange={setBroker} disabled={disabled} placeholder="broker" />
+      <BrokerSelect
+        value={broker}
+        onChange={setBroker}
+        disabled={disabled}
+        placeholder="broker"
+      />
 
       <button
         className="btn btn-dark"
@@ -72,7 +77,11 @@ export default function AddStockForm({
         Refresh
       </button>
       {onSignOut ? (
-        <button className="btn btn-dark" onClick={onSignOut} disabled={disabled}>
+        <button
+          className="btn btn-dark"
+          onClick={onSignOut}
+          disabled={disabled}
+        >
           Sign out
         </button>
       ) : null}
