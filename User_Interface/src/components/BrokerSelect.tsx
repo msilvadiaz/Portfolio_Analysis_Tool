@@ -61,6 +61,13 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
     }
   };
 
+  const handleToggleMenu = () => {
+    if (isManualMode) {
+      setIsManualMode(false);
+    }
+    setIsOpen((prev) => !prev);
+  };
+
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Escape") {
       setIsOpen(false);
@@ -75,15 +82,26 @@ export default function BrokerSelect({ value, onChange, disabled }: Props) {
 
   return (
     <div className="broker-select-wrapper" style={{ maxWidth: 240 }} ref={wrapperRef}>
-      <input
-        className="form-control bg-gray text-black"
-        placeholder={isManualMode ? "Enter broker name" : "broker"}
-        value={query}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onFocus={() => !isManualMode && setIsOpen(true)}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
-      />
+      <div className="broker-control">
+        <input
+          className="form-control bg-gray text-black broker-select-input"
+          placeholder={isManualMode ? "Enter broker name" : "Select broker"}
+          value={query}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onFocus={() => !isManualMode && setIsOpen(true)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+        />
+        <button
+          type="button"
+          className="broker-toggle"
+          onClick={handleToggleMenu}
+          disabled={disabled}
+          aria-label="Toggle broker options"
+        >
+          ▾
+        </button>
+      </div>
 
       {!isManualMode && isOpen ? (
         <div className="broker-dropdown">

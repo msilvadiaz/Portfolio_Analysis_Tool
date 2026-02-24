@@ -41,12 +41,38 @@ input.form-control:focus::placeholder {
   width: 100%;
 }
 
+.broker-control {
+  display: flex;
+  align-items: stretch;
+}
+
+.broker-select-input {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.broker-toggle {
+  min-width: 42px;
+  border: 1px solid #4a4a4a;
+  border-left: none;
+  background: #7fb0db;
+  color: #111;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 10px;
+}
+
+.broker-toggle:hover,
+.broker-toggle:focus {
+  background: #99c0e2;
+}
+
 .broker-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 2px);
   left: 0;
   right: 0;
-  z-index: 20;
+  z-index: 1000;
   max-height: 220px;
   overflow-y: auto;
   background: #1f1f1f;
@@ -65,7 +91,8 @@ input.form-control:focus::placeholder {
 
 .broker-option:hover,
 .broker-option:focus {
-  background: #320909;
+  background: #7fb0db;
+  color: #111;
 }
 
 .broker-option-other {
