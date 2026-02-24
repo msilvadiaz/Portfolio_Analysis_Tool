@@ -36,3 +36,29 @@ input.form-control:focus::placeholder {
   color: #bfbfbf !important;
   opacity: 1 !important;
 }
+.broker-select-wrap {
+  position: relative;
+}
+
+.broker-select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #c8c8c8;
+  transform: translateY(-35%);
+  pointer-events: none;
+}
+
+.broker-select-input {
+  padding-right: 32px;
+}
+
+.broker-select-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
