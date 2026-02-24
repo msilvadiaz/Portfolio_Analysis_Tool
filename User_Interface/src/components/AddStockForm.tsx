@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import BrokerSelect from "./BrokerSelect";
 
 type Props = {
   onAdd: (
@@ -53,12 +54,9 @@ export default function AddStockForm({
         onChange={(e) => setShares(e.target.value)}
         disabled={disabled}
       />
-      <input
-        className="form-control bg-gray text-black"
-        style={{ maxWidth: 240 }}
-        placeholder="broker"
+      <BrokerSelect
         value={broker}
-        onChange={(e) => setBroker(e.target.value)}
+        onChange={setBroker}
         disabled={disabled}
       />
 
