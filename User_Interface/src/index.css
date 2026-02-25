@@ -36,6 +36,18 @@ input.form-control:focus::placeholder {
   color: #bfbfbf !important;
   opacity: 1 !important;
 }
+.addStockInput {
+  border-radius: 12px !important;
+  background: #121419 !important;
+  border: 1px solid rgba(175, 185, 215, 0.28) !important;
+  color: #f2f5ff !important;
+}
+
+.addStockInput:focus {
+  border-color: rgba(109, 140, 255, 0.9) !important;
+  box-shadow: 0 0 0 0.2rem rgba(109, 140, 255, 0.2) !important;
+}
+
 .brokerSelect {
   position: relative;
   width: 100%;
