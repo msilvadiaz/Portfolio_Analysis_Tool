@@ -37,7 +37,7 @@ export default function AddStockForm({
   return (
     <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
       <input
-        className="form-control bg-gray text-black"
+        className="form-control addStockInput"
         style={{ maxWidth: 200 }}
         placeholder="ticker"
         value={ticker}
@@ -45,7 +45,7 @@ export default function AddStockForm({
         disabled={disabled}
       />
       <input
-        className="form-control bg-gray text-black"
+        className="form-control addStockInput"
         style={{ maxWidth: 160 }}
         type="number"
         step="any"
