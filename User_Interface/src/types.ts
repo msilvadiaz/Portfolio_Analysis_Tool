@@ -58,3 +58,39 @@ export type EfficientFrontierResponse = {
     warnings?: string[];
   };
 };
+
+
+export type OptimizationObjective = "max_sharpe" | "min_vol" | "target_return" | "risk_preset";
+export type RiskPreset = "conservative" | "balanced" | "aggressive";
+
+export type PortfolioMetricSet = {
+  expectedReturn: number;
+  volatility: number;
+  sharpe: number;
+  weights: Array<{ ticker: string; weight: number }>;
+};
+
+export type PortfolioOptimizationResponse = {
+  tickers: string[];
+  objective: OptimizationObjective;
+  inputs: {
+    riskFreeRate: number;
+    targetReturn: number | null;
+    preset: RiskPreset | null;
+    nSim: number;
+    constraints: {
+      minWeight: number;
+      maxWeight: number;
+    };
+  };
+  current: PortfolioMetricSet;
+  recommended: PortfolioMetricSet;
+  rebalance: Array<{
+    ticker: string;
+    current: number;
+    recommended: number;
+    delta: number;
+    action: "Increase" | "Reduce" | "Hold";
+  }>;
+  warnings?: string[];
+};

@@ -6,7 +6,14 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import pandas as pd
 import time
-from models.efficient_frontier import DEFAULT_RISK_FREE_RATE, build_efficient_frontier_response
+from models.efficient_frontier import (
+    DEFAULT_MAX_WEIGHT,
+    DEFAULT_MIN_WEIGHT,
+    DEFAULT_N_SIM,
+    DEFAULT_RISK_FREE_RATE,
+    build_efficient_frontier_response,
+    build_portfolio_optimization_response,
+)
 
 load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
@@ -470,6 +477,95 @@ def api_efficient_frontier():
         return jsonify(payload)
     except Exception as e:
         return jsonify({"error": f"failed to compute efficient frontier: {str(e)}"}), 502
+
+
+@stockboard.route("/api/models/portfolio-optimization", methods=["GET"])
+def api_portfolio_optimization():
+    username_lower = (request.args.get("user") or "").strip().lower()
+    user_id_raw = (request.args.get("userId") or "").strip()
+    objective = (request.args.get("objective") or "max_sharpe").strip().lower()
+
+    risk_free_rate_raw = request.args.get("rf")
+    n_sim_raw = request.args.get("nSim")
+    target_return_raw = request.args.get("targetReturn")
+    preset = (request.args.get("preset") or "").strip().lower() or None
+    max_weight_raw = request.args.get("maxWeight")
+    min_weight_raw = request.args.get("minWeight")
+
+    risk_free_rate = DEFAULT_RISK_FREE_RATE
+    if risk_free_rate_raw is not None:
+        try:
+            risk_free_rate = float(risk_free_rate_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "rf must be a numeric value"}), 400
+
+    n_sim = DEFAULT_N_SIM
+    if n_sim_raw is not None:
+        try:
+            n_sim = int(n_sim_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "nSim must be an integer"}), 400
+        if n_sim < 100:
+            return jsonify({"error": "nSim must be at least 100"}), 400
+
+    target_return = None
+    if target_return_raw is not None:
+        try:
+            target_return = float(target_return_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "targetReturn must be a numeric value"}), 400
+
+    max_weight = DEFAULT_MAX_WEIGHT
+    if max_weight_raw is not None:
+        try:
+            max_weight = float(max_weight_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "maxWeight must be a numeric value"}), 400
+
+    min_weight = DEFAULT_MIN_WEIGHT
+    if min_weight_raw is not None:
+        try:
+            min_weight = float(min_weight_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "minWeight must be a numeric value"}), 400
+
+    if min_weight < 0 or max_weight > 1 or min_weight > max_weight:
+        return jsonify({"error": "constraints require 0 <= minWeight <= maxWeight <= 1"}), 400
+
+    with Session(engine) as s:
+        if user_id_raw:
+            try:
+                user_id = int(user_id_raw)
+            except ValueError:
+                return jsonify({"error": "userId must be an integer"}), 400
+            user = s.query(User).filter_by(id=user_id).first()
+            if not user:
+                return jsonify({"error": "user not found"}), 404
+            username_lower = user.username
+
+        if not username_lower:
+            return jsonify({"error": "user or userId is required"}), 400
+
+        holdings = get_user_holdings(s, username_lower)
+
+    try:
+        payload = build_portfolio_optimization_response(
+            holdings=holdings,
+            objective=objective,
+            risk_free_rate=risk_free_rate,
+            n_sim=n_sim,
+            target_return=target_return,
+            preset=preset,
+            min_weight=min_weight,
+            max_weight=max_weight,
+        )
+        if payload.get("error"):
+            return jsonify(payload), 400
+        return jsonify(payload)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as e:
+        return jsonify({"error": f"failed to compute portfolio optimization: {str(e)}"}), 502
     
 CORS(stockboard, resources={r"/api/*": {"origins": "*"}})
 
