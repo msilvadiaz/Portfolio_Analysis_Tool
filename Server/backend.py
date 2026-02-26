@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import pandas as pd
 import time
+from models.efficient_frontier import DEFAULT_RISK_FREE_RATE, build_efficient_frontier_response
 
 load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
@@ -430,6 +431,45 @@ def api_portfolio_history():
         return jsonify(series)
     except Exception as e:
         return jsonify({"error": f"failed to compute portfolio history: {str(e)}"}), 502
+
+
+@stockboard.route("/api/models/efficient-frontier", methods=["GET"])
+def api_efficient_frontier():
+    username_lower = (request.args.get("user") or "").strip().lower()
+    user_id_raw = (request.args.get("userId") or "").strip()
+    risk_free_rate_raw = request.args.get("rf")
+
+    risk_free_rate = DEFAULT_RISK_FREE_RATE
+    if risk_free_rate_raw is not None:
+        try:
+            risk_free_rate = float(risk_free_rate_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "rf must be a numeric value"}), 400
+
+    with Session(engine) as s:
+        if user_id_raw:
+            try:
+                user_id = int(user_id_raw)
+            except ValueError:
+                return jsonify({"error": "userId must be an integer"}), 400
+            user = s.query(User).filter_by(id=user_id).first()
+            if not user:
+                return jsonify({"error": "user not found"}), 404
+            username_lower = user.username
+
+        if not username_lower:
+            return jsonify({"error": "user or userId is required"}), 400
+
+        holdings = get_user_holdings(s, username_lower)
+
+    try:
+        payload = build_efficient_frontier_response(
+            holdings=holdings,
+            risk_free_rate=risk_free_rate,
+        )
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"error": f"failed to compute efficient frontier: {str(e)}"}), 502
     
 CORS(stockboard, resources={r"/api/*": {"origins": "*"}})
 

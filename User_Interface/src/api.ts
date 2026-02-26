@@ -1,4 +1,10 @@
-import type { ApiError, GuestStock, PortfolioHistoryPoint, UserPortfolioResponse } from "./types";
+import type {
+  ApiError,
+  EfficientFrontierResponse,
+  GuestStock,
+  PortfolioHistoryPoint,
+  UserPortfolioResponse,
+} from "./types";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, "") ?? "";
 
@@ -113,4 +119,16 @@ export async function getPortfolioHistory(username: string, period = "1y"): Prom
   const data = await readJson<(PortfolioHistoryPoint[] & ApiError) | ApiError>(res);
   if (!res.ok) throw new Error((data as ApiError).error || "Failed to load portfolio history");
   return Array.isArray(data) ? (data as PortfolioHistoryPoint[]) : [];
+}
+
+export async function getEfficientFrontier(username: string, riskFreeRate?: number): Promise<EfficientFrontierResponse> {
+  const params = new URLSearchParams({ user: username });
+  if (typeof riskFreeRate === "number") {
+    params.set("rf", String(riskFreeRate));
+  }
+
+  const res = await fetch(apiUrl(`/api/models/efficient-frontier?${params.toString()}`));
+  const data = await readJson<EfficientFrontierResponse & ApiError>(res);
+  if (!res.ok) throw new Error(data.error || "Failed to load efficient frontier");
+  return data;
 }
