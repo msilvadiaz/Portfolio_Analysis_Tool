@@ -30,3 +30,31 @@ export type PortfolioHistoryPoint = {
   date: string;
   value: number;
 };
+
+export type EfficientFrontierPoint = {
+  volatility: number;
+  expectedReturn: number;
+  sharpe: number;
+};
+
+export type EfficientFrontierPortfolio = {
+  expectedReturn: number;
+  volatility: number;
+  variance: number;
+  sharpe: number;
+  weights: Array<{ ticker: string; weight: number }>;
+};
+
+export type EfficientFrontierResponse = {
+  tickers: string[];
+  portfolio: EfficientFrontierPortfolio;
+  frontier: EfficientFrontierPoint[];
+  maxSharpe?: EfficientFrontierPoint;
+  minVolatility?: EfficientFrontierPoint;
+  meta: {
+    riskFreeRate: number;
+    tradingDays: number;
+    nSim: number;
+    warnings?: string[];
+  };
+};

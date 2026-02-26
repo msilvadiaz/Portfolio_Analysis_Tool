@@ -1,5 +1,6 @@
 import type { GuestStock } from "../types";
 import PortfolioHistoryChart from "./PortfolioHistoryChart";
+import EfficientFrontierChart from "./EfficientFrontierChart";
 
 type Props = {
   currentUser: string | null;
@@ -26,6 +27,9 @@ export default function Models({ currentUser, guestStocks }: Props) {
                 Portfolio value over last 1Y (using current guest holdings).
               </p>
               <PortfolioHistoryChart guestStocks={guestStocks} />
+              <p className="text-secondary mt-4 mb-0">
+                Efficient frontier is available for saved users after sign in.
+              </p>
             </>
           )
         ) : (
@@ -34,6 +38,7 @@ export default function Models({ currentUser, guestStocks }: Props) {
               Portfolio value over last 1Y (using current holdings).
             </p>
             <PortfolioHistoryChart currentUser={currentUser} />
+            <EfficientFrontierChart currentUser={currentUser} />
           </>
         )}
       </div>
