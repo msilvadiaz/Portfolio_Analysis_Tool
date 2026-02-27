@@ -82,7 +82,7 @@ export default function AddStockForm({
           onClick={onSignOut}
           disabled={disabled}
         >
-          Sign out
+          Log out
         </button>
       ) : null}
     </div>

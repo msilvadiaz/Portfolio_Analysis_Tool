@@ -14,10 +14,10 @@ export default function AuthBar({
   return (
     <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
       <button className="btn btn-dark" onClick={onMakeUsername}>
-        Make a username
+        Save portfolio
       </button>
       <button className="btn btn-dark" onClick={onHaveUsername}>
-        Already have a username
+        Access existing portfolio
       </button>
       <span className="text-light">Guest mode: your stocks aren’t saved yet.</span>
     </div>
