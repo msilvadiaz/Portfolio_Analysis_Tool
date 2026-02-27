@@ -148,7 +148,7 @@ export default function Stockboard({
   }
 
   async function haveUsernameFlow() {
-    const name = window.prompt("Enter your username:");
+    const name = window.prompt("Enter portfolio name:");
     if (!name) return;
 
     await drawUser(name);
