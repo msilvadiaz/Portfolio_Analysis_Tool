@@ -1,6 +1,7 @@
 import type { GuestStock } from "../types";
 import PortfolioHistoryChart from "./PortfolioHistoryChart";
 import EfficientFrontierChart from "./EfficientFrontierChart";
+import OptimizationRecommendations from "./models/OptimizationRecommendations";
 
 type Props = {
   currentUser: string | null;
@@ -39,6 +40,7 @@ export default function Models({ currentUser, guestStocks }: Props) {
             </p>
             <PortfolioHistoryChart currentUser={currentUser} />
             <EfficientFrontierChart currentUser={currentUser} />
+            <OptimizationRecommendations currentUser={currentUser} />
           </>
         )}
       </div>

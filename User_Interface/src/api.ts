@@ -1,6 +1,9 @@
 import type {
   ApiError,
   EfficientFrontierResponse,
+  OptimizationObjective,
+  PortfolioOptimizationResponse,
+  RiskPreset,
   GuestStock,
   PortfolioHistoryPoint,
   UserPortfolioResponse,
@@ -130,5 +133,36 @@ export async function getEfficientFrontier(username: string, riskFreeRate?: numb
   const res = await fetch(apiUrl(`/api/models/efficient-frontier?${params.toString()}`));
   const data = await readJson<EfficientFrontierResponse & ApiError>(res);
   if (!res.ok) throw new Error(data.error || "Failed to load efficient frontier");
+  return data;
+}
+
+
+export type PortfolioOptimizationParams = {
+  user: string;
+  objective: OptimizationObjective;
+  targetReturn?: number;
+  preset?: RiskPreset;
+  rf?: number;
+  nSim?: number;
+  minWeight?: number;
+  maxWeight?: number;
+};
+
+export async function getPortfolioOptimization(params: PortfolioOptimizationParams): Promise<PortfolioOptimizationResponse> {
+  const query = new URLSearchParams({
+    user: params.user,
+    objective: params.objective,
+  });
+
+  if (typeof params.targetReturn === "number") query.set("targetReturn", String(params.targetReturn));
+  if (typeof params.preset === "string") query.set("preset", params.preset);
+  if (typeof params.rf === "number") query.set("rf", String(params.rf));
+  if (typeof params.nSim === "number") query.set("nSim", String(params.nSim));
+  if (typeof params.minWeight === "number") query.set("minWeight", String(params.minWeight));
+  if (typeof params.maxWeight === "number") query.set("maxWeight", String(params.maxWeight));
+
+  const res = await fetch(apiUrl(`/api/models/portfolio-optimization?${query.toString()}`));
+  const data = await readJson<PortfolioOptimizationResponse & ApiError>(res);
+  if (!res.ok) throw new Error(data.error || "Failed to load portfolio optimization");
   return data;
 }
