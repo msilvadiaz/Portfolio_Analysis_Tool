@@ -1,5 +1,7 @@
 Flask
+flask-cors
 yfinance
+pandas
 SQLAlchemy
 python-dotenv
 gunicorn
