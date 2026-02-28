@@ -29,10 +29,7 @@ export default function Stockboard({
   const latestLoadId = useRef(0);
 
   const title = useMemo(
-    () =>
-      currentUser
-        ? `StockBoard: current portfolio: ${currentUser}`
-        : "StockBoard (Guest)",
+    () => (currentUser ? `StockBoard: ${currentUser}` : "StockBoard (Guest)"),
     [currentUser],
   );
 
