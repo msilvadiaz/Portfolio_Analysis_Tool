@@ -6,7 +6,6 @@ import Message from "./Message";
 import type { GuestStock, StockRow } from "../types";
 import * as api from "../api";
 
-
 type Props = {
   currentUser: string | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<string | null>>;
@@ -32,7 +31,7 @@ export default function Stockboard({
   const title = useMemo(
     () =>
       currentUser
-        ? `StockBoard — Welcome ${currentUser}`
+        ? `StockBoard: current portfolio: ${currentUser}`
         : "StockBoard (Guest)",
     [currentUser],
   );
