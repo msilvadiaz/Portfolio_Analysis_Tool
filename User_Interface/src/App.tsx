@@ -47,7 +47,7 @@ export default function App() {
             height: 34,
             borderRadius: 10,
             border: "1px solid rgba(255,255,255,0.10)",
-            background: "rgba(255,255,255,0.08)",
+            background: "#000",
             color: "rgba(240,248,255,0.92)",
             fontSize: 24,
             lineHeight: 1,
