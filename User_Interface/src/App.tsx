@@ -13,7 +13,6 @@ export default function App() {
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
   const [modelsRefreshVersion, setModelsRefreshVersion] = useState(0);
   const menuWidth = 260;
-  const menuPeekWidth = 52;
   const stockboardRef = useRef<HTMLElement | null>(null);
   const modelsRef = useRef<HTMLElement | null>(null);
 
@@ -31,13 +30,41 @@ export default function App() {
         onChange={setView}
         width={menuWidth}
         isOpen={isMenuOpen}
-        peekWidth={menuPeekWidth}
         onToggle={() => setIsMenuOpen((open) => !open)}
       />
 
+      {!isMenuOpen ? (
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen(true)}
+          aria-label="Show dashboard"
+          title="Show dashboard"
+          style={{
+            position: "fixed",
+            top: 18,
+            left: 10,
+            width: 78,
+            height: 64,
+            borderRadius: 20,
+            border: "1px solid rgba(255,255,255,0.12)",
+            background: "rgba(16,19,23,0.95)",
+            color: "rgba(240,248,255,0.92)",
+            fontSize: 36,
+            lineHeight: 1,
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            zIndex: 30,
+            boxShadow: "0 8px 18px rgba(0,0,0,0.45)",
+          }}
+        >
+          ☰
+        </button>
+      ) : null}
+
       <main
         style={{
-          marginLeft: isMenuOpen ? menuWidth : menuPeekWidth,
+          marginLeft: isMenuOpen ? menuWidth : 0,
           minHeight: "100vh",
           transition: "margin-left 260ms ease",
         }}
