@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import yfinance as yf, os
-from sqlalchemy import create_engine, Integer, String, ForeignKey, UniqueConstraint, Float
+from sqlalchemy import create_engine, Integer, String, ForeignKey, UniqueConstraint, Float, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -47,6 +47,10 @@ class Stock(Base):
     )
 
 Base.metadata.create_all(engine)
+
+def next_stock_id(session: Session) -> int:
+    max_id = session.query(func.max(Stock.id)).scalar()
+    return (int(max_id) if max_id is not None else 0) + 1
 
 HISTORY_CACHE_TTL_SECONDS = 600
 portfolio_history_cache: dict[tuple[str, str], tuple[float, list[dict[str, str | float]]]] = {}
@@ -264,7 +268,7 @@ def api_add_profile():
         s.query(Stock).filter_by(user_id=u.id).delete()
 
         for t, b, sh in valid_items:
-            s.add(Stock(user_id=u.id, ticker=t, broker=b, shares=sh))
+            s.add(Stock(id=next_stock_id(s), user_id=u.id, ticker=t, broker=b, shares=sh))
 
         s.commit()
         clear_cached_portfolio_history(username_lower)
@@ -306,7 +310,7 @@ def api_add_stock():
             current_shares = float(st.shares or 0.0)
             st.shares = current_shares + float(shares)
         else:
-            s.add(Stock(user_id=u.id, ticker=ticker, broker=broker, shares=shares))
+            s.add(Stock(id=next_stock_id(s), user_id=u.id, ticker=ticker, broker=broker, shares=shares))
 
         s.commit()
         clear_cached_portfolio_history(username_lower)
