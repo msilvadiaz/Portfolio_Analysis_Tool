@@ -1,82 +1,104 @@
-# React + TypeScript + Vite
+# Portfolio Analysis Tool — System Overview
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. Purpose
 
-Currently, two official plugins are available:
+This project is a full-stack web application for managing stock portfolios and performing quantitative portfolio analysis. It allows users to track holdings, evaluate performance over time, and generate optimization insights based on historical market data.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 2. System Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The system follows a client–server architecture composed of:
 
-## Expanding the ESLint configuration
+### Frontend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Built with **React, TypeScript, and Vite**
+- Provides interactive dashboards for portfolio management and analytics
+- Supports both guest usage (temporary data) and registered user profiles
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Built with **Flask and SQLAlchemy**
+- Exposes REST APIs for data management and analytics
+- Handles portfolio storage, calculations, and model execution
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Database
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Uses **PostgreSQL** for persistent storage of user profiles and holdings
+- Connection configured via the `DATABASE_URL` environment variable
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### External Data Source
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Market prices and historical data retrieved from **Yahoo Finance (yfinance)**
 
-## Portfolio Performance (1Y)
+---
 
-The Models tab now renders a **Portfolio Performance (1Y)** chart for logged-in users.
-The backend computes this as:
+## 3. Functional Capabilities
 
-`V(t) = Σ_i shares_i * adjustedClose_i(t)`
+### Portfolio Management
 
-using the user's **current** holdings from PostgreSQL and Yahoo Finance daily adjusted close prices (`period=1y`, `interval=1d`, `auto_adjust=True`). Duplicate tickers across brokers are aggregated by summing shares before valuation.
+- Create and manage user profiles
+- Add and remove stock holdings
+- Retrieve real-time price quotes
+- Compute current portfolio value
+
+### Historical Analysis
+
+- Generate time-series portfolio value over a selected period
+- Aggregate holdings by ticker for analysis
+- Support both saved users and guest portfolios
+
+### Quantitative Models
+
+- Efficient frontier simulation using Monte Carlo methods
+- Portfolio optimization based on selected objectives (e.g., maximum Sharpe ratio)
+- Rebalancing recommendations indicating buy, sell, or hold actions
+
+---
+
+## 4. API Interface
+
+The backend exposes REST endpoints for:
+
+- User and portfolio management
+- Stock operations
+- Historical performance retrieval
+- Quantitative model execution
+
+All endpoints are accessible under the `/api` path.
+
+---
+
+## 5. Data Handling and Caching
+
+- Portfolio data for registered users is stored in the database
+- Guest data exists only in memory during the session
+- Historical portfolio results are cached temporarily to improve performance
+- Cache is invalidated when portfolio data changes
+
+---
+
+## 6. Configuration Requirements
+
+### Backend Environment Variable
+
+- `DATABASE_URL` — PostgreSQL connection string
+
+### Frontend Environment Variables
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+---
+
+## 7. Deployment Notes
+
+- Frontend and backend can be deployed independently
+- Cross-Origin Resource Sharing (CORS) is enabled for API endpoints
+- The system is designed to support future expansion of analytics models and asset classes
+
+---
+
+## 8. Summary
+
+This application provides an integrated platform for portfolio tracking and quantitative analysis, combining persistent storage, real-time market data, and advanced financial modeling within a modern web architecture.
