@@ -374,6 +374,34 @@ def api_quote(ticker: str):
         return jsonify({"ticker": t, "price": None, "previous_close": None, "error": str(e)}), 502
 
 
+def _parse_guest_holdings(payload) -> dict[str, float]:
+    if not isinstance(payload, list):
+        raise ValueError("stocks must be an array")
+
+    holdings: dict[str, float] = {}
+    for item in payload:
+        if not isinstance(item, dict):
+            raise ValueError("each stock must be an object")
+
+        ticker = (item.get("ticker") or "").strip().upper()
+        shares_raw = item.get("shares")
+
+        try:
+            shares = float(shares_raw)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("shares must be a number > 0") from exc
+
+        if not ticker:
+            raise ValueError("ticker is required")
+
+        if shares <= 0:
+            raise ValueError("shares must be a number > 0")
+
+        holdings[ticker] = holdings.get(ticker, 0.0) + shares
+
+    return holdings
+
+
 
 
 @stockboard.route("/api/portfolio/history/guest", methods=["POST"])
@@ -385,29 +413,10 @@ def api_portfolio_history_guest():
     if period != "1y":
         return jsonify({"error": "only period=1y is currently supported"}), 400
 
-    if not isinstance(payload, list):
-        return jsonify({"error": "stocks must be an array"}), 400
-
-    holdings: dict[str, float] = {}
-    for item in payload:
-        if not isinstance(item, dict):
-            return jsonify({"error": "each stock must be an object"}), 400
-
-        ticker = (item.get("ticker") or "").strip().upper()
-        shares_raw = item.get("shares")
-
-        try:
-            shares = float(shares_raw)
-        except (TypeError, ValueError):
-            return jsonify({"error": "shares must be a number > 0"}), 400
-
-        if not ticker:
-            return jsonify({"error": "ticker is required"}), 400
-
-        if shares <= 0:
-            return jsonify({"error": "shares must be a number > 0"}), 400
-
-        holdings[ticker] = holdings.get(ticker, 0.0) + shares
+    try:
+        holdings = _parse_guest_holdings(payload)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
 
     if not holdings:
         return jsonify([])
@@ -417,6 +426,46 @@ def api_portfolio_history_guest():
         return jsonify(series)
     except Exception as e:
         return jsonify({"error": f"failed to compute portfolio history: {str(e)}"}), 502
+
+
+@stockboard.route("/api/models/efficient-frontier/guest", methods=["POST"])
+def api_efficient_frontier_guest():
+    data = request.get_json(force=True) or {}
+    payload = data.get("stocks")
+
+    risk_free_rate_raw = data.get("rf")
+    n_sim_raw = data.get("nSim")
+
+    risk_free_rate = DEFAULT_RISK_FREE_RATE
+    if risk_free_rate_raw is not None:
+        try:
+            risk_free_rate = float(risk_free_rate_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "rf must be a numeric value"}), 400
+
+    n_sim = DEFAULT_N_SIM
+    if n_sim_raw is not None:
+        try:
+            n_sim = int(n_sim_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "nSim must be an integer"}), 400
+        if n_sim < 100:
+            return jsonify({"error": "nSim must be at least 100"}), 400
+
+    try:
+        holdings = _parse_guest_holdings(payload)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    try:
+        payload = build_efficient_frontier_response(
+            holdings=holdings,
+            risk_free_rate=risk_free_rate,
+            n_sim=n_sim,
+        )
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"error": f"failed to compute efficient frontier: {str(e)}"}), 502
 
 @stockboard.route("/api/portfolio/history", methods=["GET"])
 def api_portfolio_history():
@@ -554,6 +603,84 @@ def api_portfolio_optimization():
             return jsonify({"error": "user or userId is required"}), 400
 
         holdings = get_user_holdings(s, username_lower)
+
+    try:
+        payload = build_portfolio_optimization_response(
+            holdings=holdings,
+            objective=objective,
+            risk_free_rate=risk_free_rate,
+            n_sim=n_sim,
+            target_return=target_return,
+            preset=preset,
+            min_weight=min_weight,
+            max_weight=max_weight,
+        )
+        if payload.get("error"):
+            return jsonify(payload), 400
+        return jsonify(payload)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as e:
+        return jsonify({"error": f"failed to compute portfolio optimization: {str(e)}"}), 502
+
+
+@stockboard.route("/api/models/portfolio-optimization/guest", methods=["POST"])
+def api_portfolio_optimization_guest():
+    data = request.get_json(force=True) or {}
+    payload = data.get("stocks")
+    objective = (data.get("objective") or "max_sharpe").strip().lower()
+
+    risk_free_rate_raw = data.get("rf")
+    n_sim_raw = data.get("nSim")
+    target_return_raw = data.get("targetReturn")
+    preset = (data.get("preset") or "").strip().lower() or None
+    max_weight_raw = data.get("maxWeight")
+    min_weight_raw = data.get("minWeight")
+
+    risk_free_rate = DEFAULT_RISK_FREE_RATE
+    if risk_free_rate_raw is not None:
+        try:
+            risk_free_rate = float(risk_free_rate_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "rf must be a numeric value"}), 400
+
+    n_sim = DEFAULT_N_SIM
+    if n_sim_raw is not None:
+        try:
+            n_sim = int(n_sim_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "nSim must be an integer"}), 400
+        if n_sim < 100:
+            return jsonify({"error": "nSim must be at least 100"}), 400
+
+    target_return = None
+    if target_return_raw is not None:
+        try:
+            target_return = float(target_return_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "targetReturn must be a numeric value"}), 400
+
+    max_weight = DEFAULT_MAX_WEIGHT
+    if max_weight_raw is not None:
+        try:
+            max_weight = float(max_weight_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "maxWeight must be a numeric value"}), 400
+
+    min_weight = DEFAULT_MIN_WEIGHT
+    if min_weight_raw is not None:
+        try:
+            min_weight = float(min_weight_raw)
+        except (TypeError, ValueError):
+            return jsonify({"error": "minWeight must be a numeric value"}), 400
+
+    if min_weight < 0 or max_weight > 1 or min_weight > max_weight:
+        return jsonify({"error": "constraints require 0 <= minWeight <= maxWeight <= 1"}), 400
+
+    try:
+        holdings = _parse_guest_holdings(payload)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
 
     try:
         payload = build_portfolio_optimization_response(

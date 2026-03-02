@@ -136,6 +136,25 @@ export async function getEfficientFrontier(username: string, riskFreeRate?: numb
   return data;
 }
 
+export async function getGuestEfficientFrontier(
+  stocks: GuestStock[],
+  riskFreeRate?: number,
+  nSim?: number
+): Promise<EfficientFrontierResponse> {
+  const body: { stocks: GuestStock[]; rf?: number; nSim?: number } = { stocks };
+  if (typeof riskFreeRate === "number") body.rf = riskFreeRate;
+  if (typeof nSim === "number") body.nSim = nSim;
+
+  const res = await fetch(apiUrl("/api/models/efficient-frontier/guest"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await readJson<EfficientFrontierResponse & ApiError>(res);
+  if (!res.ok) throw new Error(data.error || "Failed to load efficient frontier");
+  return data;
+}
+
 
 export type PortfolioOptimizationParams = {
   user: string;
@@ -162,6 +181,44 @@ export async function getPortfolioOptimization(params: PortfolioOptimizationPara
   if (typeof params.maxWeight === "number") query.set("maxWeight", String(params.maxWeight));
 
   const res = await fetch(apiUrl(`/api/models/portfolio-optimization?${query.toString()}`));
+  const data = await readJson<PortfolioOptimizationResponse & ApiError>(res);
+  if (!res.ok) throw new Error(data.error || "Failed to load portfolio optimization");
+  return data;
+}
+
+export type GuestPortfolioOptimizationParams = Omit<PortfolioOptimizationParams, "user"> & {
+  stocks: GuestStock[];
+};
+
+export async function getGuestPortfolioOptimization(
+  params: GuestPortfolioOptimizationParams
+): Promise<PortfolioOptimizationResponse> {
+  const body: {
+    stocks: GuestStock[];
+    objective: OptimizationObjective;
+    targetReturn?: number;
+    preset?: RiskPreset;
+    rf?: number;
+    nSim?: number;
+    minWeight?: number;
+    maxWeight?: number;
+  } = {
+    stocks: params.stocks,
+    objective: params.objective,
+  };
+
+  if (typeof params.targetReturn === "number") body.targetReturn = params.targetReturn;
+  if (typeof params.preset === "string") body.preset = params.preset;
+  if (typeof params.rf === "number") body.rf = params.rf;
+  if (typeof params.nSim === "number") body.nSim = params.nSim;
+  if (typeof params.minWeight === "number") body.minWeight = params.minWeight;
+  if (typeof params.maxWeight === "number") body.maxWeight = params.maxWeight;
+
+  const res = await fetch(apiUrl("/api/models/portfolio-optimization/guest"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
   const data = await readJson<PortfolioOptimizationResponse & ApiError>(res);
   if (!res.ok) throw new Error(data.error || "Failed to load portfolio optimization");
   return data;

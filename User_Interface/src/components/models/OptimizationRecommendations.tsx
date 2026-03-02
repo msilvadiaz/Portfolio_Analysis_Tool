@@ -1,21 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
-import { getPortfolioOptimization } from "../../api";
+import { getGuestPortfolioOptimization, getPortfolioOptimization } from "../../api";
 import type {
+  GuestStock,
   OptimizationObjective,
   PortfolioOptimizationResponse,
   RiskPreset,
 } from "../../types";
 
-type Props = {
-  currentUser: string;
-  refreshVersion: number;
-};
+type Props =
+  | {
+      currentUser: string;
+      guestStocks?: never;
+      refreshVersion: number;
+    }
+  | {
+      currentUser?: never;
+      guestStocks: GuestStock[];
+      refreshVersion: number;
+    };
 
 function pct(value: number, digits = 2): string {
   return `${(value * 100).toFixed(digits)}%`;
 }
 
-export default function OptimizationRecommendations({ currentUser, refreshVersion }: Props) {
+export default function OptimizationRecommendations(props: Props) {
   const [objective, setObjective] = useState<OptimizationObjective>("max_sharpe");
   const [targetReturn, setTargetReturn] = useState(0.15);
   const [preset, setPreset] = useState<RiskPreset>("balanced");
@@ -33,13 +41,21 @@ export default function OptimizationRecommendations({ currentUser, refreshVersio
       setLoading(true);
       setError(null);
       try {
-        const payload = await getPortfolioOptimization({
-          user: currentUser,
-          objective,
-          targetReturn: objective === "target_return" ? targetReturn : undefined,
-          preset: objective === "risk_preset" ? preset : undefined,
-          maxWeight,
-        });
+        const payload = props.currentUser
+          ? await getPortfolioOptimization({
+              user: props.currentUser,
+              objective,
+              targetReturn: objective === "target_return" ? targetReturn : undefined,
+              preset: objective === "risk_preset" ? preset : undefined,
+              maxWeight,
+            })
+          : await getGuestPortfolioOptimization({
+              stocks: props.guestStocks ?? [],
+              objective,
+              targetReturn: objective === "target_return" ? targetReturn : undefined,
+              preset: objective === "risk_preset" ? preset : undefined,
+              maxWeight,
+            });
         if (!cancelled) setData(payload);
       } catch (err) {
         if (!cancelled) {
@@ -56,7 +72,7 @@ export default function OptimizationRecommendations({ currentUser, refreshVersio
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [currentUser, maxWeight, objective, preset, refreshVersion, targetReturn]);
+  }, [props.currentUser, props.guestStocks, maxWeight, objective, preset, props.refreshVersion, targetReturn]);
 
   const sortedWeights = useMemo(() => {
     if (!data) return [];

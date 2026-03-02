@@ -18,14 +18,13 @@ export default function Models({ currentUser, guestStocks, refreshVersion }: Pro
         {!currentUser ? (
           guestStocks.length === 0 ? (
             <p className="text-secondary mb-0">
-              Add one or more guest positions in StockBoard to view portfolio history here.
+              Add one or more guest positions in StockBoard to view model outputs here.
             </p>
           ) : (
             <>
               <PortfolioHistoryChart guestStocks={guestStocks} refreshVersion={refreshVersion} />
-              <p className="text-secondary mt-4 mb-0">
-                Efficient frontier is available for saved users after sign in.
-              </p>
+              <EfficientFrontierChart guestStocks={guestStocks} refreshVersion={refreshVersion} />
+              <OptimizationRecommendations guestStocks={guestStocks} refreshVersion={refreshVersion} />
             </>
           )
         ) : (
