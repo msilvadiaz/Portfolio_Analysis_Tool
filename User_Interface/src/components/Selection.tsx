@@ -1,5 +1,6 @@
 // src/components/SideMenu.tsx
 import type { Dispatch, SetStateAction } from "react";
+import toggleButtonStyle from "./toggleButtonStyle";
 
 export type ViewKey = "stockboard" | "models";
 
@@ -44,15 +45,7 @@ export default function SideMenu({
           type="button"
           onClick={onToggle}
           style={{
-            width: 34,
-            height: 34,
-            borderRadius: 10,
-            background: "#000",
-            display: "grid",
-            placeItems: "center",
-            border: "1px solid rgba(255,255,255,0.10)",
-            color: "rgba(240,248,255,0.92)",
-            cursor: "pointer",
+            ...toggleButtonStyle,
           }}
           aria-label="Hide dashboard"
           title="Hide dashboard"

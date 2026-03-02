@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import SideMenu, { type ViewKey } from "./components/Selection";
 import Stockboard from "./components/Stockboard";
 import Models from "./components/Models";
+import toggleButtonStyle from "./components/toggleButtonStyle";
 import type { GuestStock } from "./types";
 
 export default function App() {
@@ -43,17 +44,7 @@ export default function App() {
             position: "fixed",
             top: 18,
             left: 10,
-            width: 34,
-            height: 34,
-            borderRadius: 10,
-            border: "1px solid rgba(255,255,255,0.10)",
-            background: "#000",
-            color: "rgba(240,248,255,0.92)",
-            fontSize: 24,
-            lineHeight: 1,
-            display: "grid",
-            placeItems: "center",
-            cursor: "pointer",
+            ...toggleButtonStyle,
             zIndex: 30,
           }}
         >
