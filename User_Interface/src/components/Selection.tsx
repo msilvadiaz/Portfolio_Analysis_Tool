@@ -1,5 +1,7 @@
 // src/components/SideMenu.tsx
 import type { Dispatch, SetStateAction } from "react";
+import HamburgerIcon from "./HamburgerIcon";
+import toggleButtonStyle from "./toggleButtonStyle";
 
 export type ViewKey = "stockboard" | "models";
 
@@ -7,10 +9,14 @@ export default function SideMenu({
   active,
   onChange,
   width = 260,
+  isOpen = true,
+  onToggle,
 }: {
   active: ViewKey;
   onChange: Dispatch<SetStateAction<ViewKey>> | ((v: ViewKey) => void);
   width?: number;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }) {
   const isStock = active === "stockboard";
   const isModels = active === "models";
@@ -20,32 +26,33 @@ export default function SideMenu({
       style={{
         width,
         minWidth: width,
+        boxSizing: "border-box",
         height: "100vh",
         position: "fixed",
         left: 0,
         top: 0,
-        backgroundColor: "rgba(0,0,0,0.85)",
-        borderRight: "1px solid rgba(255,255,255,0.10)",
+        transform: isOpen ? "translateX(0)" : "translateX(-100%)",
+        backgroundColor: "#2f2f2f",
+        border: "1px solid rgba(255,255,255,0.35)",
         color: "rgba(240,248,255,0.92)",
         padding: "18px 14px",
         zIndex: 20,
+        transition: "transform 260ms ease",
       }}
+      aria-hidden={!isOpen}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
+        <button
+          type="button"
+          onClick={onToggle}
           style={{
-            width: 34,
-            height: 34,
-            borderRadius: 10,
-            background: "rgba(255,255,255,0.08)",
-            display: "grid",
-            placeItems: "center",
-            border: "1px solid rgba(255,255,255,0.10)",
+            ...toggleButtonStyle,
           }}
-          aria-hidden="true"
+          aria-label="Hide dashboard"
+          title="Hide dashboard"
         >
-          ☰
-        </div>
+          <HamburgerIcon />
+        </button>
         <div style={{ fontWeight: 700, letterSpacing: 0.4 }}>
           <span style={{ color: "#f7fafb" }}>Dashboard</span>
         </div>

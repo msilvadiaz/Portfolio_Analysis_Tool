@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import SideMenu, { type ViewKey } from "./components/Selection";
 import Stockboard from "./components/Stockboard";
 import Models from "./components/Models";
+import HamburgerIcon from "./components/HamburgerIcon";
+import toggleButtonStyle from "./components/toggleButtonStyle";
 import type { GuestStock } from "./types";
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("stockboard");
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [currentUser, setCurrentUser] = useState<string | null>(() =>
     localStorage.getItem("stockboard_username"),
   );
@@ -24,9 +27,39 @@ export default function App() {
 
   return (
     <div>
-      <SideMenu active={view} onChange={setView} width={menuWidth} />
+      <SideMenu
+        active={view}
+        onChange={setView}
+        width={menuWidth}
+        isOpen={isMenuOpen}
+        onToggle={() => setIsMenuOpen((open) => !open)}
+      />
 
-      <main style={{ marginLeft: menuWidth, minHeight: "100vh" }}>
+      {!isMenuOpen ? (
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen(true)}
+          aria-label="Show dashboard"
+          title="Show dashboard"
+          style={{
+            position: "fixed",
+            top: 18,
+            left: 10,
+            ...toggleButtonStyle,
+            zIndex: 30,
+          }}
+        >
+          <HamburgerIcon />
+        </button>
+      ) : null}
+
+      <main
+        style={{
+          marginLeft: isMenuOpen ? menuWidth : 0,
+          minHeight: "100vh",
+          transition: "margin-left 260ms ease",
+        }}
+      >
         <section ref={stockboardRef}>
           <Stockboard
             currentUser={currentUser}
