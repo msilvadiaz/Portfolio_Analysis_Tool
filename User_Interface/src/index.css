@@ -108,6 +108,16 @@ input.form-control:focus::placeholder {
   position: relative;
   width: 100%;
   max-width: 260px;
+  z-index: 1;
+}
+
+.brokerSelect:focus-within {
+  z-index: 4200;
+}
+
+.addStockToolbar {
+  position: relative;
+  z-index: 50;
 }
 
 .brokerSelectInputWrap {
@@ -153,7 +163,7 @@ input.form-control:focus::placeholder {
   position: absolute;
   width: 100%;
   margin-top: 6px;
-  z-index: 1000;
+  z-index: 4300;
   max-height: 260px;
   overflow-y: auto;
   background: #0f0f12;
