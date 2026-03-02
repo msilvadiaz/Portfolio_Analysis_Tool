@@ -26,7 +26,7 @@ export default function App() {
   }, [view]);
 
   return (
-    <div>
+    <div className="appShell">
       <SideMenu
         active={view}
         onChange={setView}
@@ -60,7 +60,7 @@ export default function App() {
           transition: "margin-left 260ms ease",
         }}
       >
-        <section ref={stockboardRef}>
+        <section ref={stockboardRef} className="pageSection">
           <Stockboard
             currentUser={currentUser}
             setCurrentUser={setCurrentUser}
@@ -71,7 +71,7 @@ export default function App() {
             }
           />
         </section>
-        <section ref={modelsRef}>
+        <section ref={modelsRef} className="pageSection">
           <Models
             currentUser={currentUser}
             guestStocks={guestStocks}

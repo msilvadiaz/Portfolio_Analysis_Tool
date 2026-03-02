@@ -179,11 +179,7 @@ export default function Stockboard({
   }, [guestStocks]);
 
   return (
-    <div
-      style={{
-        background: "#5a0000",
-      }}
-    >
+    <div>
       <div className="container py-4">
         <h1 className="mb-3 text-white">{title}</h1>
 

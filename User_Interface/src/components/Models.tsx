@@ -11,10 +11,7 @@ type Props = {
 
 export default function Models({ currentUser, guestStocks, refreshVersion }: Props) {
   return (
-    <div
-      className="min-vh-100"
-      style={{ backgroundColor: "#000", color: "aliceblue" }}
-    >
+    <div className="min-vh-100">
       <div className="container py-4">
         <h1 className="mb-3">Models</h1>
 

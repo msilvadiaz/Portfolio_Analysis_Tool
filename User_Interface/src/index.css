@@ -1,10 +1,66 @@
-body { font-family: system-ui, Arial, sans-serif; margin: 24px; background-color: #000000; color: aliceblue;}
+body {
+  font-family: system-ui, Arial, sans-serif;
+  margin: 24px;
+  background: radial-gradient(circle at 12% 18%, #2b3c72 0%, transparent 42%),
+    radial-gradient(circle at 86% 12%, #5d2f7a 0%, transparent 44%),
+    linear-gradient(145deg, #0b1225 0%, #161c34 52%, #0d0f1d 100%);
+  background-attachment: fixed;
+  color: aliceblue;
+}
+
+.appShell {
+  min-height: calc(100vh - 48px);
+}
+
+.pageSection {
+  padding: 12px 0;
+}
 h1 { margin: 0 0 12px; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 button {
   padding: 8px;
   font-size: 14px;
   background: #808080;
+}
+
+.componentSurface,
+.container > h1,
+.container > .d-flex.flex-wrap.gap-2.align-items-center.mb-3,
+.container > .table-responsive,
+.container > p.text-secondary,
+.container > .text-secondary.mb-3,
+.container > .small.text-secondary.mb-2,
+.container > svg,
+.container > .mt-4 {
+  background: rgba(10, 14, 28, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 14px;
+}
+
+.container > h1 {
+  padding: 14px 16px;
+}
+
+.container > .d-flex.flex-wrap.gap-2.align-items-center.mb-3,
+.container > .table-responsive,
+.container > p.text-secondary,
+.container > .text-secondary.mb-3,
+.container > .mt-4 {
+  padding: 14px;
+}
+
+.table.table-dark,
+.table.table-dark.table-sm {
+  --bs-table-bg: rgba(13, 18, 32, 0.58);
+  --bs-table-border-color: rgba(197, 206, 232, 0.2);
+}
+
+.btn.btn-dark,
+.btn.btn-outline-secondary {
+  background: rgba(48, 56, 87, 0.72);
+  border-color: rgba(188, 199, 230, 0.32);
 }
 
 input {
