@@ -1,17 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import { getEfficientFrontier } from "../api";
-import type { EfficientFrontierResponse } from "../types";
+import { getEfficientFrontier, getGuestEfficientFrontier } from "../api";
+import type { EfficientFrontierResponse, GuestStock } from "../types";
 
-type Props = {
-  currentUser: string;
-  refreshVersion: number;
-};
+type Props =
+  | {
+      currentUser: string;
+      guestStocks?: never;
+      refreshVersion: number;
+    }
+  | {
+      currentUser?: never;
+      guestStocks: GuestStock[];
+      refreshVersion: number;
+    };
 
 function pct(value: number): string {
   return `${(value * 100).toFixed(2)}%`;
 }
 
-export default function EfficientFrontierChart({ currentUser, refreshVersion }: Props) {
+export default function EfficientFrontierChart(props: Props) {
   const [data, setData] = useState<EfficientFrontierResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +30,9 @@ export default function EfficientFrontierChart({ currentUser, refreshVersion }: 
       setLoading(true);
       setError(null);
       try {
-        const payload = await getEfficientFrontier(currentUser);
+        const payload = props.currentUser
+          ? await getEfficientFrontier(props.currentUser)
+          : await getGuestEfficientFrontier(props.guestStocks ?? []);
         if (!cancelled) setData(payload);
       } catch (err) {
         if (!cancelled) {
@@ -39,7 +48,7 @@ export default function EfficientFrontierChart({ currentUser, refreshVersion }: 
     return () => {
       cancelled = true;
     };
-  }, [currentUser, refreshVersion]);
+  }, [props.currentUser, props.guestStocks, props.refreshVersion]);
 
   const chart = useMemo(() => {
     if (!data || !data.frontier.length) return null;
