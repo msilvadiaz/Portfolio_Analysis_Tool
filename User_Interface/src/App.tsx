@@ -8,7 +8,7 @@ import type { GuestStock } from "./types";
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("stockboard");
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(() =>
     localStorage.getItem("stockboard_username"),
   );
