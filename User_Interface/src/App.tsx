@@ -6,12 +6,14 @@ import type { GuestStock } from "./types";
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("stockboard");
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [currentUser, setCurrentUser] = useState<string | null>(() =>
     localStorage.getItem("stockboard_username"),
   );
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
   const [modelsRefreshVersion, setModelsRefreshVersion] = useState(0);
   const menuWidth = 260;
+  const menuPeekWidth = 52;
   const stockboardRef = useRef<HTMLElement | null>(null);
   const modelsRef = useRef<HTMLElement | null>(null);
 
@@ -24,9 +26,22 @@ export default function App() {
 
   return (
     <div>
-      <SideMenu active={view} onChange={setView} width={menuWidth} />
+      <SideMenu
+        active={view}
+        onChange={setView}
+        width={menuWidth}
+        isOpen={isMenuOpen}
+        peekWidth={menuPeekWidth}
+        onToggle={() => setIsMenuOpen((open) => !open)}
+      />
 
-      <main style={{ marginLeft: menuWidth, minHeight: "100vh" }}>
+      <main
+        style={{
+          marginLeft: isMenuOpen ? menuWidth : menuPeekWidth,
+          minHeight: "100vh",
+          transition: "margin-left 260ms ease",
+        }}
+      >
         <section ref={stockboardRef}>
           <Stockboard
             currentUser={currentUser}
