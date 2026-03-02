@@ -180,7 +180,6 @@ export default function Stockboard({
 
   return (
     <div
-      className="min-vh-100"
       style={{
         background: "#5a0000",
       }}
