@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import SideMenu, { type ViewKey } from "./components/Selection";
 import Stockboard from "./components/Stockboard";
 import Models from "./components/Models";
+import HamburgerIcon from "./components/HamburgerIcon";
 import toggleButtonStyle from "./components/toggleButtonStyle";
 import type { GuestStock } from "./types";
 
@@ -48,7 +49,7 @@ export default function App() {
             zIndex: 30,
           }}
         >
-          ☰
+          <HamburgerIcon />
         </button>
       ) : null}
 

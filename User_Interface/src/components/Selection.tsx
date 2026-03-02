@@ -1,5 +1,6 @@
 // src/components/SideMenu.tsx
 import type { Dispatch, SetStateAction } from "react";
+import HamburgerIcon from "./HamburgerIcon";
 import toggleButtonStyle from "./toggleButtonStyle";
 
 export type ViewKey = "stockboard" | "models";
@@ -50,7 +51,7 @@ export default function SideMenu({
           aria-label="Hide dashboard"
           title="Hide dashboard"
         >
-          ☰
+          <HamburgerIcon />
         </button>
         <div style={{ fontWeight: 700, letterSpacing: 0.4 }}>
           <span style={{ color: "#f7fafb" }}>Dashboard</span>
