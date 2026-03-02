@@ -24,6 +24,7 @@ export default function SideMenu({
       style={{
         width,
         minWidth: width,
+        boxSizing: "border-box",
         height: "100vh",
         position: "fixed",
         left: 0,
