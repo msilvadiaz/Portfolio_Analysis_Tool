@@ -4,13 +4,14 @@ import type { EfficientFrontierResponse } from "../types";
 
 type Props = {
   currentUser: string;
+  refreshVersion: number;
 };
 
 function pct(value: number): string {
   return `${(value * 100).toFixed(2)}%`;
 }
 
-export default function EfficientFrontierChart({ currentUser }: Props) {
+export default function EfficientFrontierChart({ currentUser, refreshVersion }: Props) {
   const [data, setData] = useState<EfficientFrontierResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function EfficientFrontierChart({ currentUser }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [currentUser]);
+  }, [currentUser, refreshVersion]);
 
   const chart = useMemo(() => {
     if (!data || !data.frontier.length) return null;

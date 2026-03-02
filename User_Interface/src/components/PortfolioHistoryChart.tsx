@@ -6,10 +6,12 @@ type Props =
   | {
       currentUser: string;
       guestStocks?: never;
+      refreshVersion: number;
     }
   | {
       currentUser?: never;
       guestStocks: GuestStock[];
+      refreshVersion: number;
     };
 
 function currencyFormatter(value: number): string {
@@ -55,7 +57,7 @@ export default function PortfolioHistoryChart(props: Props) {
     return () => {
       cancelled = true;
     };
-  }, [props.currentUser, props.guestStocks]);
+  }, [props.currentUser, props.guestStocks, props.refreshVersion]);
 
   const chart = useMemo(() => {
     if (!points.length) return null;
