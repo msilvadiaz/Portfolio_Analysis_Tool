@@ -11,10 +11,7 @@ type Props = {
 
 export default function Models({ currentUser, guestStocks, refreshVersion }: Props) {
   return (
-    <div
-      className="min-vh-100"
-      style={{ backgroundColor: "#000", color: "aliceblue" }}
-    >
+    <div className="min-vh-100">
       <div className="container py-4">
         <h1 className="mb-3">Models</h1>
 
@@ -25,9 +22,6 @@ export default function Models({ currentUser, guestStocks, refreshVersion }: Pro
             </p>
           ) : (
             <>
-              <p className="text-secondary mb-3">
-                Portfolio value over last 1Y (using current guest holdings).
-              </p>
               <PortfolioHistoryChart guestStocks={guestStocks} refreshVersion={refreshVersion} />
               <p className="text-secondary mt-4 mb-0">
                 Efficient frontier is available for saved users after sign in.
@@ -36,9 +30,6 @@ export default function Models({ currentUser, guestStocks, refreshVersion }: Pro
           )
         ) : (
           <>
-            <p className="text-secondary mb-3">
-              Portfolio value over last 1Y (using current holdings).
-            </p>
             <PortfolioHistoryChart currentUser={currentUser} refreshVersion={refreshVersion} />
             <EfficientFrontierChart currentUser={currentUser} refreshVersion={refreshVersion} />
             <OptimizationRecommendations currentUser={currentUser} refreshVersion={refreshVersion} />

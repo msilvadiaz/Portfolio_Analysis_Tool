@@ -108,93 +108,103 @@ export default function PortfolioHistoryChart(props: Props) {
     };
   }, [points]);
 
-  if (loading) return <p className="text-secondary">Loading portfolio history…</p>;
-  if (error) return <p className="text-danger mb-0">{error}</p>;
-  if (!points.length)
-    return (
-      <p className="text-secondary mb-0">
-        No holdings found to plot over the last year.
-      </p>
-    );
+  const subtitle =
+    typeof props.currentUser === "string"
+      ? "Portfolio value over last 1Y (using current holdings)."
+      : "Portfolio value over last 1Y (using current guest holdings).";
 
-  if (!chart) return null;
-
-  const latest = points[points.length - 1];
+  const latest = points.length > 0 ? points[points.length - 1] : null;
 
   return (
-    <div>
-      <div className="mb-2 text-secondary small">
-        Latest: {latest.date} • {currencyFormatter(latest.value)}
-      </div>
-      <svg
-        viewBox={`0 0 ${chart.width} ${chart.height}`}
-        width="100%"
-        role="img"
-        aria-label="Portfolio performance over 1 year"
-      >
-        <rect
-          x="0"
-          y="0"
-          width={chart.width}
-          height={chart.height}
-          fill="#0f0f0f"
-          rx="8"
-        />
-        {chart.yTicks.map((tick) => (
-          <g key={tick.y}>
-            <line
-              x1={chart.margin.left}
-              x2={chart.width - chart.margin.right}
-              y1={tick.y}
-              y2={tick.y}
-              stroke="#2c2c2c"
-              strokeWidth="1"
+    <div className="mt-4">
+      <h2 className="h4 mb-2">Historical Data</h2>
+      <div className="text-secondary mb-3">{subtitle}</div>
+
+      {loading ? <p className="text-secondary mb-0">Loading portfolio history…</p> : null}
+      {error ? <p className="text-danger mb-0">{error}</p> : null}
+      {!loading && !error && !points.length ? (
+        <p className="text-secondary mb-0">No holdings found to plot over the last year.</p>
+      ) : null}
+
+      {!loading && !error && chart && latest ? (
+        <>
+          <div className="mb-2 text-secondary small">
+            Latest: {latest.date} • {currencyFormatter(latest.value)}
+          </div>
+          <svg
+            viewBox={`0 0 ${chart.width} ${chart.height}`}
+            width="100%"
+            role="img"
+            aria-label="Portfolio performance over 1 year"
+          >
+            <rect
+              x="0"
+              y="0"
+              width={chart.width}
+              height={chart.height}
+              fill="#0f0f0f"
+              rx="8"
             />
+            {chart.yTicks.map((tick) => (
+              <g key={tick.y}>
+                <line
+                  x1={chart.margin.left}
+                  x2={chart.width - chart.margin.right}
+                  y1={tick.y}
+                  y2={tick.y}
+                  stroke="#2c2c2c"
+                  strokeWidth="1"
+                />
+                <text
+                  x={chart.margin.left - 8}
+                  y={tick.y + 4}
+                  textAnchor="end"
+                  fontSize="11"
+                  fill="#a6a6a6"
+                >
+                  {currencyFormatter(tick.value)}
+                </text>
+              </g>
+            ))}
+            <path d={chart.pathData} fill="none" stroke="#4da3ff" strokeWidth="2.5" />
+
             <text
-              x={chart.margin.left - 8}
-              y={tick.y + 4}
+              x={chart.margin.left}
+              y={chart.height - 8}
+              textAnchor="start"
+              fontSize="11"
+              fill="#a6a6a6"
+            >
+              {chart.startDate}
+            </text>
+            <text
+              x={chart.width / 2}
+              y={chart.height - 8}
+              textAnchor="middle"
+              fontSize="11"
+              fill="#a6a6a6"
+            >
+              {chart.midDate}
+            </text>
+            <text
+              x={chart.width - chart.margin.right}
+              y={chart.height - 8}
               textAnchor="end"
               fontSize="11"
               fill="#a6a6a6"
             >
-              {currencyFormatter(tick.value)}
+              {chart.endDate}
             </text>
-          </g>
-        ))}
-        <path d={chart.pathData} fill="none" stroke="#4da3ff" strokeWidth="2.5" />
+          </svg>
+          <div className="small text-secondary mt-2 mb-0">
+            Hover-free sparkline view of daily portfolio value points for the last year.
+          </div>
+        </>
+      ) : null}
 
-        <text
-          x={chart.margin.left}
-          y={chart.height - 8}
-          textAnchor="start"
-          fontSize="11"
-          fill="#a6a6a6"
-        >
-          {chart.startDate}
-        </text>
-        <text
-          x={chart.width / 2}
-          y={chart.height - 8}
-          textAnchor="middle"
-          fontSize="11"
-          fill="#a6a6a6"
-        >
-          {chart.midDate}
-        </text>
-        <text
-          x={chart.width - chart.margin.right}
-          y={chart.height - 8}
-          textAnchor="end"
-          fontSize="11"
-          fill="#a6a6a6"
-        >
-          {chart.endDate}
-        </text>
-      </svg>
-      <div className="small text-secondary mt-2">
-        Hover-free sparkline view of daily portfolio value points for the last
-        year.
-      </div>
+      {!loading && !error && !chart && points.length > 0 ? (
+        <p className="text-secondary mb-0">No holdings found to plot over the last year.</p>
+      ) : null}
     </div>
   );
 }

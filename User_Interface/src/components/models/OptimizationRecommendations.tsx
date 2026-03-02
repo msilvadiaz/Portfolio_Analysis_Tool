@@ -64,7 +64,7 @@ export default function OptimizationRecommendations({ currentUser, refreshVersio
   }, [data]);
 
   return (
-    <div className="mt-4 rounded" style={{ backgroundColor: "#0f0f0f", padding: "16px" }}>
+    <div className="mt-4 rounded componentSurface p-3">
       <h2 className="h4 mb-3">Optimization Recommendations</h2>
 
       <div className="row g-3 align-items-end mb-3">

@@ -35,7 +35,7 @@ export default function AddStockForm({
   }
 
   return (
-    <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <div className="d-flex flex-wrap gap-2 align-items-center mb-3 addStockToolbar">
       <input
         className="form-control addStockInput"
         style={{ maxWidth: 200 }}
