@@ -121,39 +121,6 @@ export default function SideMenu({
         </button>
       </nav>
 
-      <div style={{ marginTop: 26, opacity: 0.4, fontSize: 12 }}>
-        {/* placeholder section like the reference UI */}
-        <div style={{ marginBottom: 10, letterSpacing: 1.2 }}>PROJECTS</div>
-        <div style={{ display: "grid", gap: 6 }}>
-          <div
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.04)",
-            }}
-          >
-            Option
-          </div>
-          <div
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.04)",
-            }}
-          >
-            Case
-          </div>
-          <div
-            style={{
-              padding: "8px 10px",
-              borderRadius: 10,
-              background: "rgba(255,255,255,0.04)",
-            }}
-          >
-            Local
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }
