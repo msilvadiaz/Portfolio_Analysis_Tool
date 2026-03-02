@@ -17,7 +17,7 @@ export const BROKER_ICONS: Record<string, string> = {
   Webull: "/broker-icons/webull.png",
   Merrill: "/broker-icons/merill.png",
   "J.P. Morgan Self-Directed": "/broker-icons/jpmorgan.png",
-  "Ally Invest": "/broker-icons/ally-invest.svg",
+  "Ally Invest": "/broker-icons/allyinvest.png",
   "SoFi Invest": "/broker-icons/sofi-invest.svg",
   Wealthfront: "/broker-icons/wealthfront.svg",
   Betterment: "/broker-icons/betterment.svg",
