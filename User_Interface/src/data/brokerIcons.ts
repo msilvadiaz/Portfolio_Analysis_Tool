@@ -32,7 +32,7 @@ export const BROKER_ICONS: Record<string, string> = {
   "Scotia iTRADE": "/broker-icons/scotia-itrade.svg",
 };
 
-export const GENERIC_BROKER_ICON = "/broker-icons/generic-broker.svg";
+export const GENERIC_BROKER_ICON = "/broker-icons/stockchart.svg";
 
 export const BROKER_ICON_FILES = TOP_BROKERS.map((broker) =>
   (BROKER_ICONS[broker.name] ?? GENERIC_BROKER_ICON).replace("/broker-icons/", ""),
