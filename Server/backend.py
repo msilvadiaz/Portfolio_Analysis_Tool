@@ -301,7 +301,9 @@ def api_add_stock():
             return jsonify({"error": "could not locate company attributed to the ticker", "ticker": ticker}), 400
 
         if st:
-            st.shares = shares
+            # "Add stock" should increase the existing holding for the same
+            # ticker/broker pair instead of overwriting it.
+            st.shares = st.shares + shares
         else:
             s.add(Stock(user_id=u.id, ticker=ticker, broker=broker, shares=shares))
 
