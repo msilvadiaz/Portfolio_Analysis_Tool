@@ -10,6 +10,7 @@ export default function App() {
     localStorage.getItem("stockboard_username"),
   );
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
+  const [modelsRefreshVersion, setModelsRefreshVersion] = useState(0);
   const menuWidth = 260;
   const stockboardRef = useRef<HTMLElement | null>(null);
   const modelsRef = useRef<HTMLElement | null>(null);
@@ -32,12 +33,16 @@ export default function App() {
             setCurrentUser={setCurrentUser}
             guestStocks={guestStocks}
             setGuestStocks={setGuestStocks}
+            onPortfolioUpdated={() =>
+              setModelsRefreshVersion((version) => version + 1)
+            }
           />
         </section>
         <section ref={modelsRef}>
           <Models
             currentUser={currentUser}
             guestStocks={guestStocks}
+            refreshVersion={modelsRefreshVersion}
           />
         </section>
       </main>

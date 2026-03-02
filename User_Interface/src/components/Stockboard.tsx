@@ -11,6 +11,7 @@ type Props = {
   setCurrentUser: React.Dispatch<React.SetStateAction<string | null>>;
   guestStocks: GuestStock[];
   setGuestStocks: React.Dispatch<React.SetStateAction<GuestStock[]>>;
+  onPortfolioUpdated: () => void;
 };
 
 export default function Stockboard({
@@ -18,6 +19,7 @@ export default function Stockboard({
   setCurrentUser,
   guestStocks,
   setGuestStocks,
+  onPortfolioUpdated,
 }: Props) {
   const [rows, setRows] = useState<StockRow[]>([]);
   const [portfolioTotal, setPortfolioTotal] = useState<number | null>(null);
@@ -65,6 +67,7 @@ export default function Stockboard({
     );
 
     setRows(out);
+    onPortfolioUpdated();
     setPortfolioTotal(
       out.some((r) => r.total_value != null)
         ? Math.round(grand * 100) / 100
@@ -76,6 +79,7 @@ export default function Stockboard({
     const data = await api.getUser(username);
     setRows(data.stocks || []);
     setPortfolioTotal(data.portfolio_total ?? null);
+    onPortfolioUpdated();
   }
 
   async function refresh() {
@@ -98,6 +102,7 @@ export default function Stockboard({
       if (!currentUser) {
         await api.quote(ticker);
         setGuestStocks((prev) => [...prev, { ticker, broker, shares }]);
+        onPortfolioUpdated();
       } else {
         const data = await api.addStock({
           user: currentUser,
@@ -107,6 +112,7 @@ export default function Stockboard({
         });
         setRows(data.stocks || []);
         setPortfolioTotal(data.portfolio_total ?? null);
+        onPortfolioUpdated();
       }
     } finally {
       setBusy(false);
@@ -118,10 +124,12 @@ export default function Stockboard({
       setGuestStocks((prev) =>
         prev.filter((s) => !(s.ticker === ticker && s.broker === broker)),
       );
+      onPortfolioUpdated();
     } else {
       const data = await api.deleteStock({ user: currentUser, ticker, broker });
       setRows(data.stocks || []);
       setPortfolioTotal(data.portfolio_total ?? null);
+      onPortfolioUpdated();
     }
   }
 
@@ -141,6 +149,7 @@ export default function Stockboard({
     setGuestStocks([]);
     setRows(data.stocks || []);
     setPortfolioTotal(data.portfolio_total ?? null);
+    onPortfolioUpdated();
   }
 
   async function haveUsernameFlow() {

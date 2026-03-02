@@ -8,13 +8,14 @@ import type {
 
 type Props = {
   currentUser: string;
+  refreshVersion: number;
 };
 
 function pct(value: number, digits = 2): string {
   return `${(value * 100).toFixed(digits)}%`;
 }
 
-export default function OptimizationRecommendations({ currentUser }: Props) {
+export default function OptimizationRecommendations({ currentUser, refreshVersion }: Props) {
   const [objective, setObjective] = useState<OptimizationObjective>("max_sharpe");
   const [targetReturn, setTargetReturn] = useState(0.15);
   const [preset, setPreset] = useState<RiskPreset>("balanced");
@@ -55,7 +56,7 @@ export default function OptimizationRecommendations({ currentUser }: Props) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [currentUser, maxWeight, objective, preset, targetReturn]);
+  }, [currentUser, maxWeight, objective, preset, refreshVersion, targetReturn]);
 
   const sortedWeights = useMemo(() => {
     if (!data) return [];
