@@ -303,7 +303,8 @@ def api_add_stock():
         if st:
             # "Add stock" should increase the existing holding for the same
             # ticker/broker pair instead of overwriting it.
-            st.shares = st.shares + shares
+            current_shares = float(st.shares or 0.0)
+            st.shares = current_shares + float(shares)
         else:
             s.add(Stock(user_id=u.id, ticker=ticker, broker=broker, shares=shares))
 
