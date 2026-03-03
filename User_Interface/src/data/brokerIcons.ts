@@ -20,7 +20,7 @@ export const BROKER_ICONS: Record<string, string> = {
   "Ally Invest": "/broker-icons/allyinvest.png",
   "SoFi Invest": "/broker-icons/sofi-invest.svg",
   Wealthfront: "/broker-icons/wealthfront.png",
-  Betterment: "/broker-icons/betterment.svg",
+  Betterment: "/broker-icons/betterment.png",
   Public: "/broker-icons/public.png",
   Moomoo: "/broker-icons/moomoo.png",
   tastytrade: "/broker-icons/tastytrade.png",
