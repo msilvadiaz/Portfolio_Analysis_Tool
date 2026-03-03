@@ -12,11 +12,13 @@ type Props =
       currentUser: string;
       guestStocks?: never;
       refreshVersion: number;
+      onLoadingChange?: (loading: boolean) => void;
     }
   | {
       currentUser?: never;
       guestStocks: GuestStock[];
       refreshVersion: number;
+      onLoadingChange?: (loading: boolean) => void;
     };
 
 function pct(value: number, digits = 2): string {
@@ -33,6 +35,14 @@ export default function OptimizationRecommendations(props: Props) {
   const [data, setData] = useState<PortfolioOptimizationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    props.onLoadingChange?.(loading);
+
+    return () => {
+      props.onLoadingChange?.(false);
+    };
+  }, [loading, props.onLoadingChange]);
 
   useEffect(() => {
     let cancelled = false;
