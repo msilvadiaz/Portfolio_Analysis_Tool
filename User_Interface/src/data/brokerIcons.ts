@@ -19,17 +19,17 @@ export const BROKER_ICONS: Record<string, string> = {
   "J.P. Morgan Self-Directed": "/broker-icons/jpmorgan.png",
   "Ally Invest": "/broker-icons/allyinvest.png",
   "SoFi Invest": "/broker-icons/sofi-invest.svg",
-  Wealthfront: "/broker-icons/wealthfront.svg",
+  Wealthfront: "/broker-icons/wealthfront.png",
   Betterment: "/broker-icons/betterment.svg",
-  Public: "/broker-icons/public.svg",
-  Moomoo: "/broker-icons/moomoo.svg",
-  tastytrade: "/broker-icons/tastytrade.svg",
-  Firstrade: "/broker-icons/firstrade.svg",
+  Public: "/broker-icons/public.png",
+  Moomoo: "/broker-icons/moomoo.png",
+  tastytrade: "/broker-icons/tastytrade.png",
+  Firstrade: "/broker-icons/firstrade.png",
   TradeZero: "/broker-icons/tradezero.svg",
   "CIBC Investor's Edge": "/broker-icons/cibc-investors-edge.svg",
   "RBC Direct Investing": "/broker-icons/rbc-direct-investing.svg",
   "BMO InvestorLine": "/broker-icons/bmo-investorline.svg",
-  "Scotia iTRADE": "/broker-icons/scotia-itrade.svg",
+  "Scotia iTRADE": "/broker-icons/scotiabank.png",
 };
 
 export const GENERIC_BROKER_ICON = "/broker-icons/generic-broker.svg";
