@@ -7,11 +7,13 @@ type Props =
       currentUser: string;
       guestStocks?: never;
       refreshVersion: number;
+      onLoadingChange?: (loading: boolean) => void;
     }
   | {
       currentUser?: never;
       guestStocks: GuestStock[];
       refreshVersion: number;
+      onLoadingChange?: (loading: boolean) => void;
     };
 
 function currencyFormatter(value: number): string {
@@ -26,6 +28,14 @@ export default function PortfolioHistoryChart(props: Props) {
   const [points, setPoints] = useState<PortfolioHistoryPoint[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    props.onLoadingChange?.(loading);
+
+    return () => {
+      props.onLoadingChange?.(false);
+    };
+  }, [loading, props.onLoadingChange]);
 
   useEffect(() => {
     let cancelled = false;

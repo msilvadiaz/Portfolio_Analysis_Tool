@@ -14,6 +14,8 @@ export default function App() {
   );
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
   const [modelsRefreshVersion, setModelsRefreshVersion] = useState(0);
+  const [stockboardLoading, setStockboardLoading] = useState(false);
+  const [modelsLoading, setModelsLoading] = useState(false);
   const menuWidth = 260;
   const stockboardRef = useRef<HTMLElement | null>(null);
   const modelsRef = useRef<HTMLElement | null>(null);
@@ -25,8 +27,16 @@ export default function App() {
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [view]);
 
+  const showGlobalLoader = stockboardLoading || modelsLoading;
+
   return (
     <div className="appShell">
+      {showGlobalLoader ? (
+        <div className="appLoadingIndicator" aria-live="polite" aria-label="Loading">
+          <span className="appLoadingSpinner" aria-hidden="true" />
+        </div>
+      ) : null}
+
       <SideMenu
         active={view}
         onChange={setView}
@@ -69,6 +79,7 @@ export default function App() {
             onPortfolioUpdated={() =>
               setModelsRefreshVersion((version) => version + 1)
             }
+            onLoadingChange={setStockboardLoading}
           />
         </section>
         <section ref={modelsRef} className="pageSection">
@@ -76,6 +87,7 @@ export default function App() {
             currentUser={currentUser}
             guestStocks={guestStocks}
             refreshVersion={modelsRefreshVersion}
+            onLoadingChange={setModelsLoading}
           />
         </section>
       </main>

@@ -12,6 +12,7 @@ type Props = {
   guestStocks: GuestStock[];
   setGuestStocks: React.Dispatch<React.SetStateAction<GuestStock[]>>;
   onPortfolioUpdated: () => void;
+  onLoadingChange?: (loading: boolean) => void;
 };
 
 export default function Stockboard({
@@ -20,6 +21,7 @@ export default function Stockboard({
   guestStocks,
   setGuestStocks,
   onPortfolioUpdated,
+  onLoadingChange,
 }: Props) {
   const [rows, setRows] = useState<StockRow[]>([]);
   const [portfolioTotal, setPortfolioTotal] = useState<number | null>(null);
@@ -29,6 +31,10 @@ export default function Stockboard({
     variant?: "danger" | "success" | "info";
   }>({ text: null });
   const latestLoadId = useRef(0);
+
+  useEffect(() => {
+    onLoadingChange?.(busy);
+  }, [busy, onLoadingChange]);
 
   const title = useMemo(
     () => (currentUser ? `StockBoard: ${currentUser}` : "StockBoard (Guest)"),
