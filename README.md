@@ -82,7 +82,7 @@ All endpoints are accessible under the `/api` path.
 
 ### Backend Environment Variable
 
-- `DATABASE_URL` — PostgreSQL connection string
+- `DATABASE_URL` - PostgreSQL connection string
 
 ### Frontend Environment Variables
 
