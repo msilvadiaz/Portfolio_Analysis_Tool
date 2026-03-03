@@ -1,4 +1,4 @@
-# Portfolio Analysis Tool — System Overview
+# Portfolio Analysis Tool - System Overview
 
 ## 1. Purpose
 
