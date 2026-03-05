@@ -9,6 +9,8 @@ type Props = {
     broker: string,
   ) => Promise<void> | void;
   onRefresh: () => Promise<void> | void;
+  onToggleCurrency?: () => void;
+  toggleCurrencyLabel?: string;
   onSignOut?: () => void;
   disabled?: boolean;
 };
@@ -16,6 +18,8 @@ type Props = {
 export default function AddStockForm({
   onAdd,
   onRefresh,
+  onToggleCurrency,
+  toggleCurrencyLabel,
   onSignOut,
   disabled,
 }: Props) {
@@ -76,6 +80,15 @@ export default function AddStockForm({
       >
         Refresh
       </button>
+      {onToggleCurrency && toggleCurrencyLabel ? (
+        <button
+          className="btn btn-dark"
+          onClick={onToggleCurrency}
+          disabled={disabled}
+        >
+          {toggleCurrencyLabel}
+        </button>
+      ) : null}
       {onSignOut ? (
         <button
           className="btn btn-dark"
