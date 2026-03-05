@@ -2,7 +2,7 @@ import BrokerIcon from "./BrokerIcon";
 import { BROKER_ICONS } from "../data/brokerIcons";
 import type { StockRow } from "../types";
 import type { SupportedCurrency } from "../utils/currency";
-import { formatCurrency } from "../utils/currency";
+import { formatConvertedCurrency } from "../utils/currency";
 
 type Props = {
   rows: StockRow[];
@@ -85,7 +85,7 @@ export default function PortfolioTable({
                   <td style={{ color }}>
                     {typeof s.price === "number" ? (
                       <>
-                        {formatCurrency(s.price, currency)}
+                        {formatConvertedCurrency(s.price, currency)}
                         {triangle ? (
                           <span style={{ marginLeft: 6, color }}>
                             {triangle}
@@ -99,7 +99,7 @@ export default function PortfolioTable({
                   <td style={{ color }}>
                     {typeof s.total_value === "number" ? (
                       <>
-                        {formatCurrency(s.total_value, currency)}
+                        {formatConvertedCurrency(s.total_value, currency)}
                         {triangle ? (
                           <span style={{ marginLeft: 6, color }}>
                             {triangle}
@@ -135,7 +135,7 @@ export default function PortfolioTable({
               Total invested amount:
             </td>
             <td className="fw-bold">
-              {portfolioTotal != null ? formatCurrency(portfolioTotal, currency) : "_"}
+              {portfolioTotal != null ? formatConvertedCurrency(portfolioTotal, currency) : "_"}
             </td>
             <td />
           </tr>

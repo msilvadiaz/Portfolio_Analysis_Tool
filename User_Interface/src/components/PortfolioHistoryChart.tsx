@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getGuestPortfolioHistory, getPortfolioHistory } from "../api";
 import type { GuestStock, PortfolioHistoryPoint } from "../types";
 import type { SupportedCurrency } from "../utils/currency";
-import { formatCurrency } from "../utils/currency";
+import { formatConvertedCurrency } from "../utils/currency";
 
 type Props =
   | {
@@ -135,7 +135,7 @@ export default function PortfolioHistoryChart(props: Props) {
       {!loading && !error && chart && latest ? (
         <>
           <div className="mb-2 text-secondary small">
-            Latest: {latest.date} • {formatCurrency(latest.value, props.currency)}
+            Latest: {latest.date} • {formatConvertedCurrency(latest.value, props.currency)}
           </div>
           <svg
             viewBox={`0 0 ${chart.width} ${chart.height}`}
@@ -168,7 +168,7 @@ export default function PortfolioHistoryChart(props: Props) {
                   fontSize="11"
                   fill="#a6a6a6"
                 >
-                  {formatCurrency(tick.value, props.currency)}
+                  {formatConvertedCurrency(tick.value, props.currency)}
                 </text>
               </g>
             ))}
