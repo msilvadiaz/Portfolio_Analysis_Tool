@@ -151,13 +151,13 @@ export default function Stockboard({
 
   function makeUsernameFlow() {
     setMsg({ text: null });
-    setNameInput(currentUser ?? "");
+    setNameInput("");
     setNameModalMode("save");
   }
 
   function haveUsernameFlow() {
     setMsg({ text: null });
-    setNameInput(currentUser ?? "");
+    setNameInput("");
     setNameModalMode("load");
   }
 
@@ -274,7 +274,6 @@ export default function Stockboard({
           onConfirm={submitNameModal}
           onCancel={cancelNameModal}
           isLoading={busy}
-          disabled={busy}
           confirmLabel={nameModalMode === "save" ? "Save" : "Load"}
         />
       </div>

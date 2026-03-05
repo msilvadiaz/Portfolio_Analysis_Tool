@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -25,6 +25,7 @@ export default function NamePromptModal({
   confirmLabel = "Confirm",
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -66,7 +67,7 @@ export default function NamePromptModal({
           }}
           aria-modal="true"
           role="dialog"
-          aria-labelledby="name-prompt-title"
+          aria-labelledby={titleId}
         >
           <motion.div
             className="bg-dark text-light rounded shadow p-4 w-100"
@@ -77,7 +78,7 @@ export default function NamePromptModal({
             transition={{ duration: 0.18, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 id="name-prompt-title" className="h5 mb-3">
+            <h2 id={titleId} className="h5 mb-3">
               {title}
             </h2>
             <input
@@ -86,6 +87,9 @@ export default function NamePromptModal({
               value={value}
               onChange={(event) => setValue(event.target.value)}
               placeholder="Enter portfolio name"
+              aria-label="Portfolio name"
+              autoCapitalize="none"
+              autoComplete="off"
               disabled={controlsDisabled}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
