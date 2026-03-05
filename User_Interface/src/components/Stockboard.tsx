@@ -3,6 +3,7 @@ import AuthBar from "./AuthBar";
 import AddStockForm from "./AddStockForm";
 import PortfolioTable from "./PortfolioTable";
 import Message from "./Message";
+import NamePromptModal from "./NamePromptModal";
 import type { GuestStock, StockRow } from "../types";
 import * as api from "../api";
 import type { SupportedCurrency } from "../utils/currency";
@@ -36,6 +37,10 @@ export default function Stockboard({
     variant?: "danger" | "success" | "info";
   }>({ text: null });
   const latestLoadId = useRef(0);
+  const [nameModalMode, setNameModalMode] = useState<"save" | "load" | null>(
+    null,
+  );
+  const [nameInput, setNameInput] = useState("");
 
   useEffect(() => {
     onLoadingChange?.(busy);
@@ -144,32 +149,66 @@ export default function Stockboard({
     }
   }
 
-  async function makeUsernameFlow() {
-    const name = window.prompt("Name the portfolio to save:");
-    if (!name) return;
-
-    const payload = guestStocks.map((s) => ({
-      ticker: s.ticker,
-      broker: s.broker,
-      shares: s.shares,
-    }));
-
-    const data = await api.addProfile(name, payload);
-    localStorage.setItem("stockboard_username", name);
-    setCurrentUser(name);
-    setGuestStocks([]);
-    setRows(data.stocks || []);
-    setPortfolioTotal(data.portfolio_total ?? null);
-    onPortfolioUpdated();
+  function makeUsernameFlow() {
+    setMsg({ text: null });
+    setNameInput("");
+    setNameModalMode("save");
   }
 
-  async function haveUsernameFlow() {
-    const name = window.prompt("Enter portfolio name:");
-    if (!name) return;
+  function haveUsernameFlow() {
+    setMsg({ text: null });
+    setNameInput("");
+    setNameModalMode("load");
+  }
 
-    await drawUser(name);
-    localStorage.setItem("stockboard_username", name);
-    setCurrentUser(name);
+  function cancelNameModal() {
+    if (busy) return;
+    setNameModalMode(null);
+    setNameInput("");
+  }
+
+  async function submitNameModal() {
+    const trimmedName = nameInput.trim();
+    if (!trimmedName) {
+      setMsg({ text: "Portfolio name cannot be empty.", variant: "danger" });
+      return;
+    }
+
+    setBusy(true);
+    setMsg({ text: null });
+    try {
+      if (nameModalMode === "save") {
+        const payload = guestStocks.map((s) => ({
+          ticker: s.ticker,
+          broker: s.broker,
+          shares: s.shares,
+        }));
+        const data = await api.addProfile(trimmedName, payload);
+        localStorage.setItem("stockboard_username", trimmedName);
+        setCurrentUser(trimmedName);
+        setGuestStocks([]);
+        setRows(data.stocks || []);
+        setPortfolioTotal(data.portfolio_total ?? null);
+        onPortfolioUpdated();
+      } else if (nameModalMode === "load") {
+        await drawUser(trimmedName);
+        localStorage.setItem("stockboard_username", trimmedName);
+        setCurrentUser(trimmedName);
+      }
+
+      setNameModalMode(null);
+      setNameInput("");
+    } catch {
+      setMsg({
+        text:
+          nameModalMode === "save"
+            ? "Unable to save portfolio with that name."
+            : "Unable to load portfolio with that name.",
+        variant: "danger",
+      });
+    } finally {
+      setBusy(false);
+    }
   }
 
   function handleSignOut() {
@@ -221,6 +260,21 @@ export default function Stockboard({
           currency={currency}
           onDelete={handleDelete}
           disabled={busy}
+        />
+
+        <NamePromptModal
+          isOpen={nameModalMode !== null}
+          title={
+            nameModalMode === "save"
+              ? "Name the portfolio to save"
+              : "Enter portfolio name"
+          }
+          value={nameInput}
+          setValue={setNameInput}
+          onConfirm={submitNameModal}
+          onCancel={cancelNameModal}
+          isLoading={busy}
+          confirmLabel={nameModalMode === "save" ? "Save" : "Load"}
         />
       </div>
     </div>
