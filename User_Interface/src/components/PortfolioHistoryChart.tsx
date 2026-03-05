@@ -1,28 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { getGuestPortfolioHistory, getPortfolioHistory } from "../api";
 import type { GuestStock, PortfolioHistoryPoint } from "../types";
+import type { SupportedCurrency } from "../utils/currency";
+import { formatCurrency } from "../utils/currency";
 
 type Props =
   | {
       currentUser: string;
       guestStocks?: never;
       refreshVersion: number;
+      currency: SupportedCurrency;
       onLoadingChange?: (loading: boolean) => void;
     }
   | {
       currentUser?: never;
       guestStocks: GuestStock[];
       refreshVersion: number;
+      currency: SupportedCurrency;
       onLoadingChange?: (loading: boolean) => void;
     };
-
-function currencyFormatter(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
 
 export default function PortfolioHistoryChart(props: Props) {
   const [points, setPoints] = useState<PortfolioHistoryPoint[]>([]);
@@ -139,7 +135,7 @@ export default function PortfolioHistoryChart(props: Props) {
       {!loading && !error && chart && latest ? (
         <>
           <div className="mb-2 text-secondary small">
-            Latest: {latest.date} • {currencyFormatter(latest.value)}
+            Latest: {latest.date} • {formatCurrency(latest.value, props.currency)}
           </div>
           <svg
             viewBox={`0 0 ${chart.width} ${chart.height}`}
@@ -172,7 +168,7 @@ export default function PortfolioHistoryChart(props: Props) {
                   fontSize="11"
                   fill="#a6a6a6"
                 >
-                  {currencyFormatter(tick.value)}
+                  {formatCurrency(tick.value, props.currency)}
                 </text>
               </g>
             ))}

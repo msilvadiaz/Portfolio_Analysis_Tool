@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GuestStock } from "../types";
+import type { SupportedCurrency } from "../utils/currency";
 import PortfolioHistoryChart from "./PortfolioHistoryChart";
 import EfficientFrontierChart from "./EfficientFrontierChart";
 import OptimizationRecommendations from "./models/OptimizationRecommendations";
@@ -8,6 +9,7 @@ type Props = {
   currentUser: string | null;
   guestStocks: GuestStock[];
   refreshVersion: number;
+  currency: SupportedCurrency;
   onLoadingChange?: (loading: boolean) => void;
 };
 
@@ -15,6 +17,7 @@ export default function Models({
   currentUser,
   guestStocks,
   refreshVersion,
+  currency,
   onLoadingChange,
 }: Props) {
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -45,6 +48,7 @@ export default function Models({
               <PortfolioHistoryChart
                 guestStocks={guestStocks}
                 refreshVersion={refreshVersion}
+                currency={currency}
                 onLoadingChange={setHistoryLoading}
               />
               <EfficientFrontierChart
@@ -64,6 +68,7 @@ export default function Models({
             <PortfolioHistoryChart
               currentUser={currentUser}
               refreshVersion={refreshVersion}
+              currency={currency}
               onLoadingChange={setHistoryLoading}
             />
             <EfficientFrontierChart

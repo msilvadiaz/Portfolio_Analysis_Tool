@@ -1,10 +1,13 @@
 import BrokerIcon from "./BrokerIcon";
 import { BROKER_ICONS } from "../data/brokerIcons";
 import type { StockRow } from "../types";
+import type { SupportedCurrency } from "../utils/currency";
+import { formatCurrency } from "../utils/currency";
 
 type Props = {
   rows: StockRow[];
   portfolioTotal: number | null;
+  currency: SupportedCurrency;
   onDelete: (ticker: string, broker: string) => Promise<void> | void;
   disabled?: boolean;
 };
@@ -36,6 +39,7 @@ function directionTriangle(direction: Direction): string {
 export default function PortfolioTable({
   rows,
   portfolioTotal,
+  currency,
   onDelete,
   disabled,
 }: Props) {
@@ -47,8 +51,8 @@ export default function PortfolioTable({
             <th>Ticker</th>
             <th>Broker</th>
             <th>Shares</th>
-            <th>Price of stock $USD</th>
-            <th>Total $USD</th>
+            <th>Price of stock {currency}</th>
+            <th>Total {currency}</th>
             <th style={{ width: 120 }}>Actions</th>
           </tr>
         </thead>
@@ -81,7 +85,7 @@ export default function PortfolioTable({
                   <td style={{ color }}>
                     {typeof s.price === "number" ? (
                       <>
-                        ${s.price.toFixed(2)}
+                        {formatCurrency(s.price, currency)}
                         {triangle ? (
                           <span style={{ marginLeft: 6, color }}>
                             {triangle}
@@ -95,7 +99,7 @@ export default function PortfolioTable({
                   <td style={{ color }}>
                     {typeof s.total_value === "number" ? (
                       <>
-                        ${s.total_value.toFixed(2)}
+                        {formatCurrency(s.total_value, currency)}
                         {triangle ? (
                           <span style={{ marginLeft: 6, color }}>
                             {triangle}
@@ -131,7 +135,7 @@ export default function PortfolioTable({
               Total invested amount:
             </td>
             <td className="fw-bold">
-              {portfolioTotal != null ? `$${portfolioTotal}` : "_"}
+              {portfolioTotal != null ? formatCurrency(portfolioTotal, currency) : "_"}
             </td>
             <td />
           </tr>

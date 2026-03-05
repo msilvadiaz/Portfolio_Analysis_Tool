@@ -5,8 +5,13 @@ import Models from "./components/Models";
 import HamburgerIcon from "./components/HamburgerIcon";
 import toggleButtonStyle from "./components/toggleButtonStyle";
 import type { GuestStock } from "./types";
+import type { SupportedCurrency } from "./utils/currency";
 
 export default function App() {
+  const [currency, setCurrency] = useState<SupportedCurrency>(() => {
+    const savedCurrency = localStorage.getItem("stockboard_currency");
+    return savedCurrency === "USD" ? "USD" : "CAD";
+  });
   const [view, setView] = useState<ViewKey>("stockboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(() =>
@@ -19,6 +24,10 @@ export default function App() {
   const menuWidth = 260;
   const stockboardRef = useRef<HTMLElement | null>(null);
   const modelsRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem("stockboard_currency", currency);
+  }, [currency]);
 
   useEffect(() => {
     const section = view === "stockboard" ? stockboardRef.current : modelsRef.current;
@@ -76,6 +85,12 @@ export default function App() {
             setCurrentUser={setCurrentUser}
             guestStocks={guestStocks}
             setGuestStocks={setGuestStocks}
+            currency={currency}
+            onToggleCurrency={() =>
+              setCurrency((prevCurrency) =>
+                prevCurrency === "USD" ? "CAD" : "USD",
+              )
+            }
             onPortfolioUpdated={() =>
               setModelsRefreshVersion((version) => version + 1)
             }
@@ -87,6 +102,7 @@ export default function App() {
             currentUser={currentUser}
             guestStocks={guestStocks}
             refreshVersion={modelsRefreshVersion}
+            currency={currency}
             onLoadingChange={setModelsLoading}
           />
         </section>

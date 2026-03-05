@@ -5,12 +5,15 @@ import PortfolioTable from "./PortfolioTable";
 import Message from "./Message";
 import type { GuestStock, StockRow } from "../types";
 import * as api from "../api";
+import type { SupportedCurrency } from "../utils/currency";
 
 type Props = {
   currentUser: string | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<string | null>>;
   guestStocks: GuestStock[];
   setGuestStocks: React.Dispatch<React.SetStateAction<GuestStock[]>>;
+  currency: SupportedCurrency;
+  onToggleCurrency: () => void;
   onPortfolioUpdated: () => void;
   onLoadingChange?: (loading: boolean) => void;
 };
@@ -20,6 +23,8 @@ export default function Stockboard({
   setCurrentUser,
   guestStocks,
   setGuestStocks,
+  currency,
+  onToggleCurrency,
   onPortfolioUpdated,
   onLoadingChange,
 }: Props) {
@@ -204,6 +209,8 @@ export default function Stockboard({
         <AddStockForm
           onAdd={handleAdd}
           onRefresh={refresh}
+          onToggleCurrency={onToggleCurrency}
+          toggleCurrencyLabel={currency === "USD" ? "Switch to CAD" : "Switch to USD"}
           onSignOut={currentUser ? handleSignOut : undefined}
           disabled={busy}
         />
@@ -211,6 +218,7 @@ export default function Stockboard({
         <PortfolioTable
           rows={rows}
           portfolioTotal={portfolioTotal}
+          currency={currency}
           onDelete={handleDelete}
           disabled={busy}
         />
