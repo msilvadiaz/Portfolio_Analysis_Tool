@@ -70,7 +70,7 @@ export default function NamePromptModal({
           aria-labelledby={titleId}
         >
           <motion.div
-            className="bg-dark text-light rounded shadow p-4 w-100"
+            className="componentSurface namePromptModalCard text-light w-100"
             style={{ maxWidth: "420px" }}
             initial={{ opacity: 0, y: 20, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -83,7 +83,7 @@ export default function NamePromptModal({
             </h2>
             <input
               ref={inputRef}
-              className="form-control mb-3"
+              className="form-control addStockInput namePromptInput mb-3"
               value={value}
               onChange={(event) => setValue(event.target.value)}
               placeholder="Enter portfolio name"
