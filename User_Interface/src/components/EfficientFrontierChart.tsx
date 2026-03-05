@@ -46,7 +46,10 @@ export default function EfficientFrontierChart(props: Props) {
         if (!cancelled) setData(payload);
       } catch (err) {
         if (!cancelled) {
-          const message = err instanceof Error ? err.message : "Failed to load efficient frontier data";
+          const message =
+            err instanceof Error
+              ? err.message
+              : "Failed to load efficient frontier data";
           setError(message);
         }
       } finally {
@@ -69,8 +72,12 @@ export default function EfficientFrontierChart(props: Props) {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const volVals = data.frontier.map((p) => p.volatility).concat(data.portfolio.volatility);
-    const retVals = data.frontier.map((p) => p.expectedReturn).concat(data.portfolio.expectedReturn);
+    const volVals = data.frontier
+      .map((p) => p.volatility)
+      .concat(data.portfolio.volatility);
+    const retVals = data.frontier
+      .map((p) => p.expectedReturn)
+      .concat(data.portfolio.expectedReturn);
 
     const minVol = Math.min(...volVals);
     const maxVol = Math.max(...volVals);
@@ -88,8 +95,10 @@ export default function EfficientFrontierChart(props: Props) {
     const xSpan = xMax - xMin || 1;
     const ySpan = yMax - yMin || 1;
 
-    const toX = (volatility: number) => margin.left + ((volatility - xMin) / xSpan) * innerWidth;
-    const toY = (expectedReturn: number) => margin.top + (1 - (expectedReturn - yMin) / ySpan) * innerHeight;
+    const toX = (volatility: number) =>
+      margin.left + ((volatility - xMin) / xSpan) * innerWidth;
+    const toY = (expectedReturn: number) =>
+      margin.top + (1 - (expectedReturn - yMin) / ySpan) * innerHeight;
 
     const xTicks = 5;
     const yTicks = 5;
@@ -141,7 +150,8 @@ export default function EfficientFrontierChart(props: Props) {
     };
   }, [data]);
 
-  if (loading) return <p className="text-secondary">Loading efficient frontier…</p>;
+  if (loading)
+    return <p className="text-secondary">Loading efficient frontier…</p>;
   if (error) return <p className="text-danger mb-0">{error}</p>;
   if (!data) return null;
 
@@ -151,22 +161,52 @@ export default function EfficientFrontierChart(props: Props) {
     <div className="mt-4">
       <h2 className="h4 mb-2">Efficient Frontier</h2>
       <div className="small text-secondary mb-2">
-        Current portfolio: return {pct(data.portfolio.expectedReturn)} • volatility {pct(data.portfolio.volatility)} • Sharpe {data.portfolio.sharpe.toFixed(2)}
+        Current portfolio: return {pct(data.portfolio.expectedReturn)} •
+        volatility {pct(data.portfolio.volatility)} • Sharpe{" "}
+        {data.portfolio.sharpe.toFixed(2)}
       </div>
 
       {!chart ? (
-        <p className="text-secondary mb-0">Not enough valid holdings to generate frontier points.</p>
+        <p className="text-secondary mb-0">
+          Not enough valid holdings to generate frontier points.
+        </p>
       ) : (
-        <svg viewBox={`0 0 ${chart.width} ${chart.height}`} width="100%" role="img" aria-label="Efficient frontier chart">
-          <rect x="0" y="0" width={chart.width} height={chart.height} fill="#0f0f0f" rx="8" />
+        <svg
+          viewBox={`0 0 ${chart.width} ${chart.height}`}
+          width="100%"
+          role="img"
+          aria-label="Efficient frontier chart"
+        >
+          <rect
+            x="0"
+            y="0"
+            width={chart.width}
+            height={chart.height}
+            fill="#0f0f0f"
+            rx="8"
+          />
 
           {Array.from({ length: chart.xTicks }, (_, i) => {
-            const value = chart.xMin + (i / (chart.xTicks - 1)) * (chart.xMax - chart.xMin);
+            const value =
+              chart.xMin + (i / (chart.xTicks - 1)) * (chart.xMax - chart.xMin);
             const x = chart.toX(value);
             return (
               <g key={`x-${value}`}>
-                <line x1={x} x2={x} y1={chart.margin.top} y2={chart.height - chart.margin.bottom} stroke="#252525" strokeWidth="1" />
-                <text x={x} y={chart.height - chart.margin.bottom + 18} textAnchor="middle" fontSize="11" fill="#a6a6a6">
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={chart.margin.top}
+                  y2={chart.height - chart.margin.bottom}
+                  stroke="#252525"
+                  strokeWidth="1"
+                />
+                <text
+                  x={x}
+                  y={chart.height - chart.margin.bottom + 18}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#a6a6a6"
+                >
                   {pct(value)}
                 </text>
               </g>
@@ -174,12 +214,26 @@ export default function EfficientFrontierChart(props: Props) {
           })}
 
           {Array.from({ length: chart.yTicks }, (_, i) => {
-            const value = chart.yMax - (i / (chart.yTicks - 1)) * (chart.yMax - chart.yMin);
+            const value =
+              chart.yMax - (i / (chart.yTicks - 1)) * (chart.yMax - chart.yMin);
             const y = chart.toY(value);
             return (
               <g key={`y-${value}`}>
-                <line x1={chart.margin.left} x2={chart.width - chart.margin.right} y1={y} y2={y} stroke="#252525" strokeWidth="1" />
-                <text x={chart.margin.left - 10} y={y + 4} textAnchor="end" fontSize="11" fill="#a6a6a6">
+                <line
+                  x1={chart.margin.left}
+                  x2={chart.width - chart.margin.right}
+                  y1={y}
+                  y2={y}
+                  stroke="#252525"
+                  strokeWidth="1"
+                />
+                <text
+                  x={chart.margin.left - 10}
+                  y={y + 4}
+                  textAnchor="end"
+                  fontSize="11"
+                  fill="#a6a6a6"
+                >
                   {pct(value)}
                 </text>
               </g>
@@ -187,41 +241,88 @@ export default function EfficientFrontierChart(props: Props) {
           })}
 
           {chart.frontierDots.map((dot) => (
-            <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2" fill="#4da3ff" opacity="0.6">
+            <circle
+              key={dot.key}
+              cx={dot.cx}
+              cy={dot.cy}
+              r="2"
+              fill="#8c8c8c"
+              opacity="0.3"
+            >
               <title>{`Frontier: Vol ${pct(dot.point.volatility)} | Return ${pct(dot.point.expectedReturn)} | Sharpe ${dot.point.sharpe.toFixed(2)}`}</title>
             </circle>
           ))}
 
-          <circle cx={chart.portfolioDot.cx} cy={chart.portfolioDot.cy} r="5.5" fill="#ff4d4f">
+          <circle
+            cx={chart.portfolioDot.cx}
+            cy={chart.portfolioDot.cy}
+            r="5.5"
+            fill="#ff4d4f"
+          >
             <title>{`Current Portfolio: Vol ${pct(data.portfolio.volatility)} | Return ${pct(data.portfolio.expectedReturn)} | Sharpe ${data.portfolio.sharpe.toFixed(2)}`}</title>
           </circle>
 
           {chart.maxSharpeDot ? (
-            <circle cx={chart.maxSharpeDot.cx} cy={chart.maxSharpeDot.cy} r="4" fill="#f5c542">
+            <circle
+              cx={chart.maxSharpeDot.cx}
+              cy={chart.maxSharpeDot.cy}
+              r="4"
+              fill="#f5c542"
+            >
               <title>{`Max Sharpe: Vol ${pct(chart.maxSharpeDot.point.volatility)} | Return ${pct(chart.maxSharpeDot.point.expectedReturn)} | Sharpe ${chart.maxSharpeDot.point.sharpe.toFixed(2)}`}</title>
             </circle>
           ) : null}
 
           {chart.minVolDot ? (
-            <circle cx={chart.minVolDot.cx} cy={chart.minVolDot.cy} r="4" fill="#6ea8fe">
+            <circle
+              cx={chart.minVolDot.cx}
+              cy={chart.minVolDot.cy}
+              r="4"
+              fill="#6ea8fe"
+            >
               <title>{`Min Volatility: Vol ${pct(chart.minVolDot.point.volatility)} | Return ${pct(chart.minVolDot.point.expectedReturn)} | Sharpe ${chart.minVolDot.point.sharpe.toFixed(2)}`}</title>
             </circle>
           ) : null}
 
-          <text x={chart.width / 2} y={chart.height - 10} textAnchor="middle" fontSize="12" fill="#cfcfcf">
+          <text
+            x={chart.width / 2}
+            y={chart.height - 10}
+            textAnchor="middle"
+            fontSize="12"
+            fill="#cfcfcf"
+          >
             Volatility (Annualized)
           </text>
-          <text x="18" y={chart.height / 2} textAnchor="middle" fontSize="12" fill="#cfcfcf" transform={`rotate(-90 18 ${chart.height / 2})`}>
+          <text
+            x="18"
+            y={chart.height / 2}
+            textAnchor="middle"
+            fontSize="12"
+            fill="#cfcfcf"
+            transform={`rotate(-90 18 ${chart.height / 2})`}
+          >
             Expected Return (Annualized)
           </text>
         </svg>
       )}
 
       <div className="small mt-2" style={{ color: "#a6a6a6" }}>
-        <span className="me-3"><span style={{ color: "#4da3ff" }}>●</span> Frontier</span>
-        <span className="me-3"><span style={{ color: "#ff4d4f" }}>●</span> Current Portfolio</span>
-        {data.maxSharpe ? <span className="me-3"><span style={{ color: "#f5c542" }}>●</span> Max Sharpe</span> : null}
-        {data.minVolatility ? <span><span style={{ color: "#6ea8fe" }}>●</span> Min Volatility</span> : null}
+        <span className="me-3">
+          <span style={{ color: "#8c8c8c" }}>●</span> Frontier
+        </span>
+        <span className="me-3">
+          <span style={{ color: "#ff4d4f" }}>●</span> Current Portfolio
+        </span>
+        {data.maxSharpe ? (
+          <span className="me-3">
+            <span style={{ color: "#f5c542" }}>●</span> Max Sharpe
+          </span>
+        ) : null}
+        {data.minVolatility ? (
+          <span>
+            <span style={{ color: "#6ea8fe" }}>●</span> Min Volatility
+          </span>
+        ) : null}
       </div>
 
       {warnings.length > 0 ? (

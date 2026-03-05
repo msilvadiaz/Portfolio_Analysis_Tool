@@ -140,7 +140,7 @@ export default function Stockboard({
   }
 
   async function makeUsernameFlow() {
-    const name = window.prompt("Choose a username:");
+    const name = window.prompt("Name the portfolio to save:");
     if (!name) return;
 
     const payload = guestStocks.map((s) => ({
