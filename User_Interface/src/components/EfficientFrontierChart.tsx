@@ -187,7 +187,7 @@ export default function EfficientFrontierChart(props: Props) {
           })}
 
           {chart.frontierDots.map((dot) => (
-            <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2" fill="#4da3ff" opacity="0.6">
+            <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2" fill="#8c8c8c" opacity="0.65">
               <title>{`Frontier: Vol ${pct(dot.point.volatility)} | Return ${pct(dot.point.expectedReturn)} | Sharpe ${dot.point.sharpe.toFixed(2)}`}</title>
             </circle>
           ))}
@@ -218,7 +218,7 @@ export default function EfficientFrontierChart(props: Props) {
       )}
 
       <div className="small mt-2" style={{ color: "#a6a6a6" }}>
-        <span className="me-3"><span style={{ color: "#4da3ff" }}>●</span> Frontier</span>
+        <span className="me-3"><span style={{ color: "#8c8c8c" }}>●</span> Frontier</span>
         <span className="me-3"><span style={{ color: "#ff4d4f" }}>●</span> Current Portfolio</span>
         {data.maxSharpe ? <span className="me-3"><span style={{ color: "#f5c542" }}>●</span> Max Sharpe</span> : null}
         {data.minVolatility ? <span><span style={{ color: "#6ea8fe" }}>●</span> Min Volatility</span> : null}
