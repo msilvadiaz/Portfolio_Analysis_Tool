@@ -16,8 +16,8 @@ export default function AuthBar({
       <button className="btn btn-dark" onClick={onMakeUsername}>
         Save portfolio
       </button>
-      <button className="btn btn-dark" onClick={onHaveUsername}>
-        Access existing portfolio
+      <button className="btn btn-dark loadPortfolioButton" onClick={onHaveUsername}>
+        Load portfolio
       </button>
       <span className="text-light">Guest mode: your stocks aren’t saved.</span>
     </div>

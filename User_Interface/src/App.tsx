@@ -68,7 +68,7 @@ export default function App() {
             top: 18,
             left: 10,
             ...toggleButtonStyle,
-            zIndex: 30,
+            zIndex: 6100,
           }}
         >
           <HamburgerIcon />
@@ -77,9 +77,7 @@ export default function App() {
 
       <main
         style={{
-          marginLeft: isMenuOpen ? menuWidth : 0,
           minHeight: "100vh",
-          transition: "margin-left 260ms ease",
         }}
       >
         <section ref={stockboardRef} className="pageSection">

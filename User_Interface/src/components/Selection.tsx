@@ -38,7 +38,7 @@ export default function SideMenu({
         backdropFilter: "blur(10px)",
         color: "rgba(240,248,255,0.92)",
         padding: "18px 14px",
-        zIndex: 20,
+        zIndex: 6000,
         transition: "transform 260ms ease",
       }}
       aria-hidden={!isOpen}
