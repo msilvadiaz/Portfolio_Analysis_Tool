@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import SideMenu, { type ViewKey } from "./components/Selection";
 import Stockboard from "./components/Stockboard";
 import Models from "./components/Models";
@@ -55,9 +56,11 @@ export default function App() {
       />
 
       {!isMenuOpen ? (
-        <button
+        <motion.button
           type="button"
           onClick={() => setIsMenuOpen(true)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.94 }}
           aria-label="Show dashboard"
           title="Show dashboard"
           style={{
@@ -69,7 +72,7 @@ export default function App() {
           }}
         >
           <HamburgerIcon />
-        </button>
+        </motion.button>
       ) : null}
 
       <main

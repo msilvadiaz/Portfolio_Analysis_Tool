@@ -8,7 +8,7 @@ body {
 }
 
 html {
-  background: #00031f;
+  background: #000;
 }
 
 body {
@@ -19,10 +19,7 @@ body {
   letter-spacing: 0.02em;
   color: aliceblue;
 
-  background:
-    radial-gradient(circle at 12% 18%, #2b3c72 0%, transparent 42%),
-    radial-gradient(circle at 86% 12%, #5d2f7a 0%, transparent 44%),
-    linear-gradient(145deg, #0b1225 0%, #161c34 52%, #0d0f1d 100%);
+  background: #000;
 
   background-attachment: fixed;
 }

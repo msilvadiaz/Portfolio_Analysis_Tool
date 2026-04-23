@@ -1,5 +1,6 @@
 // src/components/SideMenu.tsx
 import type { Dispatch, SetStateAction } from "react";
+import { motion } from "framer-motion";
 import HamburgerIcon from "./HamburgerIcon";
 import toggleButtonStyle from "./toggleButtonStyle";
 
@@ -43,9 +44,11 @@ export default function SideMenu({
       aria-hidden={!isOpen}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <button
+        <motion.button
           type="button"
           onClick={onToggle}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.94 }}
           style={{
             ...toggleButtonStyle,
           }}
@@ -53,7 +56,7 @@ export default function SideMenu({
           title="Hide dashboard"
         >
           <HamburgerIcon />
-        </button>
+        </motion.button>
         <div style={{ fontWeight: 700, letterSpacing: 0.4 }}>
           <span style={{ color: "#f7fafb" }}>Dashboard</span>
         </div>
@@ -71,9 +74,11 @@ export default function SideMenu({
       </div>
 
       <nav style={{ marginTop: 10, display: "grid", gap: 10 }}>
-        <button
+        <motion.button
           type="button"
           onClick={() => onChange("stockboard")}
+          whileHover={{ scale: 1.02, x: 2 }}
+          whileTap={{ scale: 0.98 }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -94,11 +99,13 @@ export default function SideMenu({
         >
           <span aria-hidden="true">💸</span>
           <span style={{ fontWeight: 600 }}>StockBoard</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           onClick={() => onChange("models")}
+          whileHover={{ scale: 1.02, x: 2 }}
+          whileTap={{ scale: 0.98 }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -119,7 +126,7 @@ export default function SideMenu({
         >
           <span aria-hidden="true">📈</span>
           <span style={{ fontWeight: 600 }}>Models</span>
-        </button>
+        </motion.button>
       </nav>
 
     </aside>
