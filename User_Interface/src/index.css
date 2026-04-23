@@ -84,6 +84,20 @@ button {
   border-color: rgba(188, 199, 230, 0.32);
 }
 
+.loadPortfolioButton {
+  background: rgba(11, 15, 31, 0.58) !important;
+  border: 1px solid rgba(228, 236, 255, 0.36) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.loadPortfolioButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(11, 15, 31, 0.74) !important;
+}
+
 input {
   padding: 8px;
   font-size: 14px;
