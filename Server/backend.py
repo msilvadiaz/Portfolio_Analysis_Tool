@@ -21,6 +21,7 @@ if not DB_URL:
     raise RuntimeError("nonexistent")
 
 stockboard= Flask(__name__, template_folder="docs")
+CORS(stockboard, resources={r"/api/*": {"origins": ["http://localhost:5173"]}})
 engine = create_engine(DB_URL, future=True, echo=False)
 
 #helper classes
@@ -701,7 +702,5 @@ def api_portfolio_optimization_guest():
     except Exception as e:
         return jsonify({"error": f"failed to compute portfolio optimization: {str(e)}"}), 502
     
-CORS(stockboard, resources={r"/api/*": {"origins": "*"}})
-
 if __name__ == "__main__":
     stockboard.run(debug=True)
