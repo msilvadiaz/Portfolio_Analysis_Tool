@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import yfinance as yf, os
+import re
 from sqlalchemy import create_engine, Integer, String, ForeignKey, UniqueConstraint, Float, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from dotenv import load_dotenv
@@ -233,8 +234,8 @@ def api_add_profile():
     if not username_lower:
         return jsonify({"error": "user is required"}), 400
 
-    # First: validate all provided tickers map to Yahoo, and shares/broker are sane.
-    invalid = []
+    # Structural validation only: keep profile creation resilient to transient quote outages.
+    ticker_pattern = re.compile(r"^[A-Z][A-Z0-9.\-]{0,15}$")
     valid_items = []
     for item in payload:
         t = (item.get("ticker") or "").strip().upper()
@@ -244,17 +245,13 @@ def api_add_profile():
             sh = float(sh_raw)
         except (TypeError, ValueError):
             continue
-        if not (t and b and sh > 0):
-            continue
-        try:
-            _ = latest_price(t)
-        except Exception:
-            invalid.append(t)
-            continue
-        valid_items.append((t, b, sh))
 
-    if invalid:
-        return jsonify({"error": "could not locate company for tickers", "tickers": invalid}), 400
+        if not t or not b or sh <= 0:
+            continue
+        if not ticker_pattern.fullmatch(t):
+            continue
+
+        valid_items.append((t, b, sh))
 
     with Session(engine) as s:
         u = s.query(User).filter_by(username=username_lower).first()
