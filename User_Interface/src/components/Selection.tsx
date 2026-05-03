@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import HamburgerIcon from "./HamburgerIcon";
 import toggleButtonStyle from "./toggleButtonStyle";
 
-export type ViewKey = "stockboard" | "models";
+export type ViewKey = "stockboard";
 
 export default function SideMenu({
   active,
@@ -20,7 +20,6 @@ export default function SideMenu({
   onToggle?: () => void;
 }) {
   const isStock = active === "stockboard";
-  const isModels = active === "models";
 
   return (
     <aside
@@ -101,32 +100,6 @@ export default function SideMenu({
           <span style={{ fontWeight: 600 }}>StockBoard</span>
         </motion.button>
 
-        <motion.button
-          type="button"
-          onClick={() => onChange("models")}
-          whileHover={{ scale: 1.02, x: 2 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            width: "100%",
-            padding: "10px 12px",
-            borderRadius: 12,
-            border: `1px solid ${
-              isModels ? "rgba(139, 194, 250, 0.55)" : "rgba(255,255,255,0.10)"
-            }`,
-            background: isModels
-              ? "rgba(167,139,250,0.12)"
-              : "rgba(255,255,255,0.06)",
-            color: "rgba(240,248,255,0.95)",
-            textAlign: "left",
-            cursor: "pointer",
-          }}
-        >
-          <span aria-hidden="true">📈</span>
-          <span style={{ fontWeight: 600 }}>Models</span>
-        </motion.button>
       </nav>
 
     </aside>

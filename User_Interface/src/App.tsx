@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import SideMenu, { type ViewKey } from "./components/Selection";
 import Stockboard from "./components/Stockboard";
-import Models from "./components/Models";
 import HamburgerIcon from "./components/HamburgerIcon";
 import toggleButtonStyle from "./components/toggleButtonStyle";
 import type { GuestStock } from "./types";
@@ -19,25 +18,22 @@ export default function App() {
     localStorage.getItem("stockboard_username"),
   );
   const [guestStocks, setGuestStocks] = useState<GuestStock[]>([]);
-  const [modelsRefreshVersion, setModelsRefreshVersion] = useState(0);
   const [stockboardLoading, setStockboardLoading] = useState(false);
-  const [modelsLoading, setModelsLoading] = useState(false);
   const menuWidth = 260;
   const stockboardRef = useRef<HTMLElement | null>(null);
-  const modelsRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem("stockboard_currency", currency);
   }, [currency]);
 
   useEffect(() => {
-    const section = view === "stockboard" ? stockboardRef.current : modelsRef.current;
+    const section = stockboardRef.current;
     if (!section) return;
 
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [view]);
 
-  const showGlobalLoader = stockboardLoading || modelsLoading;
+  const showGlobalLoader = stockboardLoading;
 
   return (
     <div className="appShell">
@@ -92,19 +88,8 @@ export default function App() {
                 prevCurrency === "USD" ? "CAD" : "USD",
               )
             }
-            onPortfolioUpdated={() =>
-              setModelsRefreshVersion((version) => version + 1)
-            }
+            onPortfolioUpdated={() => undefined}
             onLoadingChange={setStockboardLoading}
-          />
-        </section>
-        <section ref={modelsRef} className="pageSection">
-          <Models
-            currentUser={currentUser}
-            guestStocks={guestStocks}
-            refreshVersion={modelsRefreshVersion}
-            currency={currency}
-            onLoadingChange={setModelsLoading}
           />
         </section>
       </main>
